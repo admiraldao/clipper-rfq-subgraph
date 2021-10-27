@@ -1,7 +1,8 @@
-import { BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { Swapped } from '../../types/ClipperDirectExchange/ClipperDirectExchange'
-import { Pair, Transaction, TransactionSource } from '../../types/schema'
+import { Pair, Token, Transaction, TransactionSource } from '../../types/schema'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO } from '../constants'
+import { fetchTokenDecimals, fetchTokenName, fetchTokenSymbol } from './token'
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
   let bd = BigDecimal.fromString('1')
@@ -69,4 +70,23 @@ export function loadTransactionSource(event: Swapped): TransactionSource {
   }
 
   return txSource as TransactionSource
+}
+
+export function loadToken(tokenAddress: Address): Token {
+  let token = Token.load(tokenAddress.toHex())
+
+  if (!token) {
+    token = new Token(tokenAddress.toHex())
+    let symbol = fetchTokenSymbol(tokenAddress)
+    token.symbol = symbol
+    token.name = fetchTokenName(tokenAddress)
+    token.decimals = fetchTokenDecimals(tokenAddress)
+    token.txCount = BIG_INT_ZERO
+    token.volume = BIG_DECIMAL_ZERO
+    token.volumeUSD = BIG_DECIMAL_ZERO
+    token.tvl = BIG_DECIMAL_ZERO
+    token.tvlUSD = BIG_DECIMAL_ZERO
+  }
+
+  return token as Token
 }

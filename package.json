@@ -4,7 +4,7 @@
   "scripts": {
     "codegen": "graph codegen --output-dir ./types",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ edoapp/clipper-polygon",
+    "deploy:polygon": "graph deploy --node https://api.thegraph.com/deploy/ edoapp/clipper-polygon --debug",
     "create-local": "graph create --node http://localhost:8020/ edoapp/clipper-polygon",
     "remove-local": "graph remove --node http://localhost:8020/ edoapp/clipper-polygon",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 edoapp/clipper-polygon"

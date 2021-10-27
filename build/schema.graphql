@@ -7,8 +7,6 @@ type Token @entity {
   name: String!
   # token decimals
   decimals: BigInt!
-  # token total supply
-  totalSupply: BigInt!
   # transactions across all pools that include this token
   txCount: BigInt!
   # volume in token units
@@ -70,35 +68,6 @@ type Pair @entity {
   volumeUSD: BigDecimal!
   # swaps data
   swaps: [Swap!]!
-  # derived fields
-  pairDayData: [PairDayData!]! @derivedFrom(field: "pair")
-  pairHourData: [PairHourData!]! @derivedFrom(field: "pair")
-}
-
-type PairDayData @entity {
-  # timestamp rounded to current day by dividing by 86400
-  id: ID!
-  # timestamp rounded to current day by dividing by 86400
-  date: Int!
-  # pointer to Pair
-  pair: Pair!
-  # transaction counts per day per pair.
-  txCount: BigInt!
-  # volume per day in usd
-  volumeUSD: BigDecimal!
-}
-
-type PairHourData @entity {
-  # token pair concatendated with date
-  id: ID!
-  # unix timestamp for start of hour
-  periodStartUnix: Int!
-  # pointer to Pair
-  pair: Pair!
-  # transaction counts per hour per pair.
-  txCount: BigInt!
-  # volume per hour in USD
-  volumeUSD: BigDecimal!
 }
 
 type TransactionSource @entity {
@@ -108,26 +77,6 @@ type TransactionSource @entity {
   txCount: BigInt!
   # derived swaps
   swaps: [Swap!]! @derivedFrom(field: "transactionSource")
-}
-
-type TransactionSourceDayData @entity {
-  id: ID!
-  # timestamp rounded to current day by dividing by 86400
-  date: Int!
-  # pointer to transactionSource
-  transactionSource: TransactionSource!
-  # transaction count per source per day
-  txCount: BigInt!
-}
-
-type TransactionSourceHourData @entity {
-  id: ID!
-  # unix timestamp for start of hour
-  periodStartUnix: Int!
-  # pointer to transactionSource
-  transactionSource: TransactionSource!
-  # transaction count per source per hour
-  txCount: BigInt!
 }
 
 type Transaction @entity {

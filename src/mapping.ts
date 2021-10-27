@@ -1,6 +1,4 @@
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import { BIG_DECIMAL_ZERO } from '../../ethereum-subgraph/src/utils/constants'
-import { getUsdPrice } from '../../ethereum-subgraph/src/utils/prices'
+import { BigDecimal } from '@graphprotocol/graph-ts'
 import {
   ClipperDirectExchange,
   // Approval,
@@ -11,15 +9,16 @@ import {
 } from '../types/ClipperDirectExchange/ClipperDirectExchange'
 import { Swap, Token } from '../types/schema'
 import { BIG_INT_ONE } from './constants'
-import { convertTokenToDecimal, loadPair, loadTransaction, loadTransactionSource } from './utils'
+import { convertTokenToDecimal, loadPair, loadToken, loadTransaction, loadTransactionSource } from './utils'
+import { getUsdPrice } from './utils/prices'
 
 export function handleDeposited(event: Deposited): void {}
 
 export function handleSwapped(event: Swapped): void {
   // let tokenPair = loadPair(event)
 
-  let inAsset = Token.load(event.params.inAsset.toHex())
-  let outAsset = Token.load(event.params.outAsset.toHex())
+  let inAsset = loadToken(event.params.inAsset)
+  let outAsset = loadToken(event.params.outAsset)
 
   let amountIn = convertTokenToDecimal(event.params.inAmount, inAsset.decimals)
   let amountOut = convertTokenToDecimal(event.params.outAmount, outAsset.decimals)
@@ -28,7 +27,7 @@ export function handleSwapped(event: Swapped): void {
   let outputPrice = getUsdPrice(outAsset.symbol)
   let amountInUsd = inputPrice.times(amountIn)
   let amountOutUsd = outputPrice.times(amountOut)
-  let transactionVolume = amountInUsd.plus(amountOutUsd).div(BigDecimal.fromString('2'))
+  // let transactionVolume = amountInUsd.plus(amountOutUsd).div(BigDecimal.fromString('2'))
 
   let transaction = loadTransaction(event)
   let swap = new Swap(event.transaction.hash.toHex())
