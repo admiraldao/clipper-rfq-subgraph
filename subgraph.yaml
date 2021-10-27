@@ -1,0 +1,31 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ClipperDirectExchange
+    network: matic
+    source:
+      address: '0x69107C1Fc1Dbf486EA64ad4Fe6f9be81b8265f92'
+      abi: ClipperDirectExchange
+      startBlock: 20400000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        # - Deposited
+        - Swapped
+      abis:
+        - name: ClipperDirectExchange
+          file: ./abis/ClipperDirectExchange.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: AggregatorV3Interface
+          file: ./abis/AggregatorV3Interface.json
+      eventHandlers:
+        # - event: Deposited(indexed address,uint256,uint256)
+        #   handler: handleDeposited
+        - event: Swapped(indexed address,indexed address,indexed address,uint256,uint256,bytes)
+          handler: handleSwapped
+      file: ./src/mapping.ts
