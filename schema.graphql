@@ -1,3 +1,43 @@
+type Pool @entity {
+  # pool address
+  id: ID!
+  # all time USD swapped
+  volumeUSD: BigDecimal!
+  # Average trade amount of all time in USD
+  avgTrade: BigDecimal!
+  # all time number of transactions
+  txCount: BigInt!
+  # time snapshots of pool data
+  dailyHistory: [DailyPoolStatus!]! @derivedFrom(field: "pool")
+  hourlyHistory: [HourlyPoolStatus!]! @derivedFrom(field: "pool")
+}
+
+type DailyPoolStatus @entity {
+  id: ID!
+  from: BigInt!
+  to: BigInt!
+  pool: Pool!
+  # number of transactions during period
+  txCount: BigInt!
+  # volume in USD
+  volumeUSD: BigDecimal!
+  # Average trade amount of all time in USD
+  avgTrade: BigDecimal!
+}
+
+type HourlyPoolStatus @entity {
+  id: ID!
+  from: BigInt!
+  to: BigInt!
+  pool: Pool!
+  # number of transactions during period
+  txCount: BigInt!
+  # volume in USD
+  volumeUSD: BigDecimal!
+  # Average trade amount of all time in USD
+  avgTrade: BigDecimal!
+}
+
 type Token @entity {
   # token address
   id: ID!
@@ -23,7 +63,7 @@ type Swap @entity {
   # transaction hash + "#" + index in swaps Transaction array
   id: ID!
   # pointer to the pool
-  # pool: Pool!
+  pool: Pool!
   # pointer to transaction
   transaction: Transaction!
   # timestamp of transaction
@@ -53,6 +93,9 @@ type Swap @entity {
   transactionSource: TransactionSource!
   # order within the txn
   logIndex: BigInt
+
+  # pair traded
+  pair: Pair!
 }
 
 type Pair @entity {
@@ -67,7 +110,7 @@ type Pair @entity {
   # volume of all time transactions in USD
   volumeUSD: BigDecimal!
   # swaps data
-  swaps: [Swap!]!
+  swaps: [Swap!]! @derivedFrom(field: "pair")
 }
 
 type TransactionSource @entity {

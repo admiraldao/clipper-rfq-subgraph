@@ -8,6 +8,8 @@ export let BIG_DECIMAL_ONE = BigDecimal.fromString('1')
 export let BIG_INT_ZERO = BigInt.fromI32(0)
 export let BIG_INT_ONE = BigInt.fromI32(1)
 export let BIG_INT_EIGHTEEN = BigInt.fromI32(18)
+export let ONE_HOUR = BigInt.fromI32(3600)
+export let ONE_DAY = BigInt.fromI32(86400)
 
 export let PriceOracleAddresses = new TypedMap<string, string>()
 PriceOracleAddresses.set('WETH', '0xF9680D99D6C9589e2a93a78A04A279e509205945') // eth / usd chainlink oracle

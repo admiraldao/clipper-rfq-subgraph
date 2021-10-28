@@ -1,6 +1,6 @@
 import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { Swapped } from '../../types/ClipperDirectExchange/ClipperDirectExchange'
-import { Pair, Token, Transaction, TransactionSource } from '../../types/schema'
+import { Token, Transaction, TransactionSource } from '../../types/schema'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO } from '../constants'
 import { fetchTokenDecimals, fetchTokenName, fetchTokenSymbol } from './token'
 
@@ -17,30 +17,6 @@ export function convertTokenToDecimal(tokenAmount: BigInt, exchangeDecimals: Big
     return tokenAmount.toBigDecimal()
   }
   return tokenAmount.toBigDecimal().div(exponentToBigDecimal(exchangeDecimals))
-}
-
-export function loadPair(event: Swapped): Pair {
-  let pairId = event.params.inAsset.toHexString().concat(event.params.outAsset.toHexString())
-  let altPairId = event.params.outAsset.toHexString().concat(event.params.inAsset.toHexString())
-
-  let pair = Pair.load(pairId)
-
-  // load alternative pair id in case first is not found
-  if (!pair) {
-    pair = Pair.load(altPairId)
-  }
-
-  if (!pair) {
-    pair = new Pair(pairId)
-    pair.asset0 = event.params.inAsset.toHexString()
-    pair.asset1 = event.params.outAsset.toHexString()
-    pair.txCount = BIG_INT_ZERO
-    pair.volumeUSD = BIG_DECIMAL_ZERO
-    pair.swaps = []
-    pair.save()
-  }
-
-  return pair as Pair
 }
 
 export function loadTransaction(event: ethereum.Event): Transaction {
@@ -86,6 +62,8 @@ export function loadToken(tokenAddress: Address): Token {
     token.volumeUSD = BIG_DECIMAL_ZERO
     token.tvl = BIG_DECIMAL_ZERO
     token.tvlUSD = BIG_DECIMAL_ZERO
+
+    token.save()
   }
 
   return token as Token
