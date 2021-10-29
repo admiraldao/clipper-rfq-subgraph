@@ -11,6 +11,7 @@ export function loadPool(): Pool {
     pool.avgTrade = BIG_DECIMAL_ZERO
     pool.volumeUSD = BIG_DECIMAL_ZERO
     pool.txCount = BIG_INT_ZERO
+    pool.uniqueUsers = BIG_INT_ZERO
 
     pool.save()
   }
@@ -18,11 +19,15 @@ export function loadPool(): Pool {
   return pool as Pool
 }
 
-export function updatePoolStatus(timestamp: BigInt, addedTxVolume: BigDecimal): Pool {
+export function updatePoolStatus(timestamp: BigInt, addedTxVolume: BigDecimal, addNewUser: boolean): Pool {
   let pool = loadPool()
   pool.txCount = pool.txCount.plus(BIG_INT_ONE)
   pool.volumeUSD = pool.volumeUSD.plus(addedTxVolume)
   pool.avgTrade = pool.volumeUSD.div(pool.txCount.toBigDecimal())
+
+  if (addNewUser) {
+    pool.uniqueUsers = pool.uniqueUsers.plus(BIG_INT_ONE)
+  }
 
   updateDailyPoolStatus(pool, timestamp, addedTxVolume)
   updateHourlyPoolStatus(pool, timestamp, addedTxVolume)

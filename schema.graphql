@@ -7,6 +7,8 @@ type Pool @entity {
   avgTrade: BigDecimal!
   # all time number of transactions
   txCount: BigInt!
+  # number of all time unique users
+  uniqueUsers: BigInt!
   # time snapshots of pool data
   dailyHistory: [DailyPoolStatus!]! @derivedFrom(field: "pool")
   hourlyHistory: [HourlyPoolStatus!]! @derivedFrom(field: "pool")

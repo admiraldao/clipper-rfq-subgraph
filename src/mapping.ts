@@ -11,7 +11,7 @@ import { Swap } from '../types/schema'
 import { BIG_INT_ONE, DIRECT_EXCHANGE_ADDRESS } from './constants'
 import { updatePair } from './entities/Pair'
 import { updatePoolStatus } from './entities/Pool'
-import { updateUser } from './entities/User'
+import { upsertUser } from './entities/User'
 import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils'
 import { getUsdPrice } from './utils/prices'
 
@@ -50,15 +50,15 @@ export function handleSwapped(event: Swapped): void {
   swap.transactionSource = txSource.id
   txSource.txCount = txSource.txCount.plus(BIG_INT_ONE)
 
-  updatePoolStatus(event.block.timestamp, transactionVolume)
   let workingPair = updatePair(
     event.params.inAsset.toHexString(),
     event.params.outAsset.toHexString(),
     transactionVolume,
   )
-  let user = updateUser(event.transaction.from, event.block.timestamp, transactionVolume)
+  let isUnique = upsertUser(event.transaction.from, event.block.timestamp, transactionVolume)
   swap.pair = workingPair.id
-  swap.sender = user.id
+  swap.sender = event.transaction.from.toString()
+  updatePoolStatus(event.block.timestamp, transactionVolume, isUnique)
 
   swap.save()
   txSource.save()

@@ -69,6 +69,15 @@ export class Pool extends Entity {
     this.set("txCount", Value.fromBigInt(value));
   }
 
+  get uniqueUsers(): BigInt {
+    let value = this.get("uniqueUsers");
+    return value.toBigInt();
+  }
+
+  set uniqueUsers(value: BigInt) {
+    this.set("uniqueUsers", Value.fromBigInt(value));
+  }
+
   get dailyHistory(): Array<string> {
     let value = this.get("dailyHistory");
     return value.toStringArray();

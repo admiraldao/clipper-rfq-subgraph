@@ -2,14 +2,16 @@ import { BigDecimal, BigInt, Bytes } from '@graphprotocol/graph-ts'
 import { User } from '../../types/schema'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO } from '../constants'
 
-export function updateUser(userWallet: Bytes, txTimestamp: BigInt, txVolume: BigDecimal): User {
-  let user = User.load(userWallet.toHexString()) as User
+export function upsertUser(userWallet: Bytes, txTimestamp: BigInt, txVolume: BigDecimal): boolean {
+  let user = User.load(userWallet.toString()) as User
+  let isNewUser = false
 
   if (!user) {
-    user = new User(userWallet.toHexString())
+    user = new User(userWallet.toString())
     user.firstTxTimestamp = txTimestamp
     user.volumeUSD = BIG_DECIMAL_ZERO
     user.txCount = BIG_INT_ZERO
+    isNewUser = true
   }
 
   user.lastTxTimestamp = txTimestamp
@@ -17,5 +19,5 @@ export function updateUser(userWallet: Bytes, txTimestamp: BigInt, txVolume: Big
   user.txCount = user.txCount.plus(BIG_INT_ONE)
   user.save()
 
-  return user
+  return isNewUser
 }
