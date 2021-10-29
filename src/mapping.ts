@@ -56,7 +56,7 @@ export function handleSwapped(event: Swapped): void {
     event.params.outAsset.toHexString(),
     transactionVolume,
   )
-  let user = updateUser(event.params.recipient, event.block.timestamp, transactionVolume)
+  let user = updateUser(event.transaction.from, event.block.timestamp, transactionVolume)
   swap.pair = workingPair.id
   swap.sender = user.id
 
