@@ -11,7 +11,8 @@ import { Swap } from '../types/schema'
 import { BIG_INT_ONE, DIRECT_EXCHANGE_ADDRESS } from './constants'
 import { updatePair } from './entities/Pair'
 import { updatePoolStatus } from './entities/Pool'
-import { convertTokenToDecimal, loadToken, loadTransaction, loadTransactionSource } from './utils'
+import { updateUser } from './entities/User'
+import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils'
 import { getUsdPrice } from './utils/prices'
 
 export function handleDeposited(event: Deposited): void {}
@@ -29,13 +30,11 @@ export function handleSwapped(event: Swapped): void {
   let amountOutUsd = outputPrice.times(amountOut)
   let transactionVolume = amountInUsd.plus(amountOutUsd).div(BigDecimal.fromString('2'))
 
-  let transaction = loadTransaction(event)
   let swap = new Swap(event.transaction.hash.toHex())
-  swap.transaction = transaction.id
-  swap.timestamp = transaction.timestamp
+  swap.transaction = event.transaction.hash
+  swap.timestamp = event.block.timestamp
   swap.inToken = inAsset.id
   swap.outToken = outAsset.id
-  swap.sender = event.transaction.from
   swap.origin = event.transaction.from
   swap.recipient = event.params.recipient
   swap.amountIn = amountIn
@@ -57,7 +56,9 @@ export function handleSwapped(event: Swapped): void {
     event.params.outAsset.toHexString(),
     transactionVolume,
   )
+  let user = updateUser(event.params.recipient, event.block.timestamp, transactionVolume)
   swap.pair = workingPair.id
+  swap.sender = user.id
 
   swap.save()
   txSource.save()

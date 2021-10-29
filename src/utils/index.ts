@@ -1,6 +1,6 @@
 import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { Swapped } from '../../types/ClipperDirectExchange/ClipperDirectExchange'
-import { Token, Transaction, TransactionSource } from '../../types/schema'
+import { Token, TransactionSource } from '../../types/schema'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO } from '../constants'
 import { fetchTokenDecimals, fetchTokenName, fetchTokenSymbol } from './token'
 
@@ -17,21 +17,6 @@ export function convertTokenToDecimal(tokenAmount: BigInt, exchangeDecimals: Big
     return tokenAmount.toBigDecimal()
   }
   return tokenAmount.toBigDecimal().div(exponentToBigDecimal(exchangeDecimals))
-}
-
-export function loadTransaction(event: ethereum.Event): Transaction {
-  let transaction = Transaction.load(event.transaction.hash.toHexString())
-  if (!transaction) {
-    transaction = new Transaction(event.transaction.hash.toHexString())
-  }
-  transaction.blockNumber = event.block.number
-  transaction.timestamp = event.block.timestamp
-  transaction.gasUsed = event.transaction.gasUsed
-  transaction.gasPrice = event.transaction.gasPrice
-  transaction.save()
-
-  // compilation requires splicit cast
-  return transaction as Transaction
 }
 
 export function loadTransactionSource(event: Swapped): TransactionSource {

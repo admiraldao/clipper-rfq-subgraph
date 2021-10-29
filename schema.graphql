@@ -65,7 +65,7 @@ type Swap @entity {
   # pointer to the pool
   pool: Pool!
   # pointer to transaction
-  transaction: Transaction!
+  transaction: Bytes!
   # timestamp of transaction
   timestamp: BigInt!
   # allow indexing by tokens
@@ -73,7 +73,7 @@ type Swap @entity {
   # allow indexing by tokens
   outToken: Token!
   # sender of the swap
-  sender: Bytes!
+  sender: User!
   # recipient of the swap
   recipient: Bytes!
   # txn origin
@@ -122,16 +122,17 @@ type TransactionSource @entity {
   swaps: [Swap!]! @derivedFrom(field: "transactionSource")
 }
 
-type Transaction @entity {
-  # txn hash
+type User @entity {
+  # wallet address
   id: ID!
-  # block txn was included in
-  blockNumber: BigInt!
-  # timestamp txn was confirmed
-  timestamp: BigInt!
-  # gas used during txn execution
-  gasUsed: BigInt!
-  gasPrice: BigInt!
-  # derived values
-  swaps: [Swap!]! @derivedFrom(field: "transaction")
+  # number of all time transactions by user
+  txCount: BigInt!
+  # timestamp of first transaction
+  firstTxTimestamp: BigInt!
+  # timestamp of last transaction
+  lastTxTimestamp: BigInt!
+  # total volume trade by user
+  volumeUSD: BigDecimal!
+  # list of trades made by the user
+  swaps: [Swap!]! @derivedFrom(field: "sender")
 }
