@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { Swapped } from '../../types/ClipperDirectExchange/ClipperDirectExchange'
 import { Token, TransactionSource } from '../../types/schema'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO } from '../constants'
@@ -20,7 +20,7 @@ export function convertTokenToDecimal(tokenAmount: BigInt, exchangeDecimals: Big
 }
 
 export function loadTransactionSource(event: Swapped): TransactionSource {
-  let isStaleClipperSource = event.params.auxiliaryData.toI32() === 0
+  let isStaleClipperSource = BigInt.fromUnsignedBytes(event.params.auxiliaryData).equals(BIG_INT_ZERO)
   let txSourceId = isStaleClipperSource ? 'Clipper' : event.params.auxiliaryData.toString() || 'Unknown'
 
   let txSource = TransactionSource.load(txSourceId)
