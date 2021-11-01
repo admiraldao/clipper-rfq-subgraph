@@ -55,9 +55,9 @@ export function handleSwapped(event: Swapped): void {
     event.params.outAsset.toHexString(),
     transactionVolume,
   )
-  let isUnique = upsertUser(event.transaction.from, event.block.timestamp, transactionVolume)
+  let isUnique = upsertUser(event.transaction.from.toHexString(), event.block.timestamp, transactionVolume)
   swap.pair = workingPair.id
-  swap.sender = event.transaction.from.toString()
+  swap.sender = event.transaction.from.toHexString()
   updatePoolStatus(event.block.timestamp, transactionVolume, isUnique)
 
   swap.save()

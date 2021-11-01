@@ -2,12 +2,12 @@ import { BigDecimal, BigInt, Bytes } from '@graphprotocol/graph-ts'
 import { User } from '../../types/schema'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO } from '../constants'
 
-export function upsertUser(userWallet: Bytes, txTimestamp: BigInt, txVolume: BigDecimal): boolean {
-  let user = User.load(userWallet.toString()) as User
+export function upsertUser(userWallet: string, txTimestamp: BigInt, txVolume: BigDecimal): boolean {
+  let user = User.load(userWallet) as User
   let isNewUser = false
 
   if (!user) {
-    user = new User(userWallet.toString())
+    user = new User(userWallet)
     user.firstTxTimestamp = txTimestamp
     user.volumeUSD = BIG_DECIMAL_ZERO
     user.txCount = BIG_INT_ZERO
