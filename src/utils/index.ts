@@ -20,7 +20,8 @@ export function convertTokenToDecimal(tokenAmount: BigInt, exchangeDecimals: Big
 }
 
 export function loadTransactionSource(event: Swapped): TransactionSource {
-  let txSourceId = event.params.auxiliaryData.toString() || 'UNKNOWN'
+  let isStaleClipperSource = event.params.auxiliaryData.toI32() === 0
+  let txSourceId = isStaleClipperSource ? 'Clipper' : event.params.auxiliaryData.toString() || 'Unknown'
 
   let txSource = TransactionSource.load(txSourceId)
   if (!txSource) {
