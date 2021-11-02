@@ -368,6 +368,24 @@ export class Token extends Entity {
   set tvlUSD(value: BigDecimal) {
     this.set("tvlUSD", Value.fromBigDecimal(value));
   }
+
+  get deposited(): BigDecimal {
+    let value = this.get("deposited");
+    return value.toBigDecimal();
+  }
+
+  set deposited(value: BigDecimal) {
+    this.set("deposited", Value.fromBigDecimal(value));
+  }
+
+  get depositedUSD(): BigDecimal {
+    let value = this.get("depositedUSD");
+    return value.toBigDecimal();
+  }
+
+  set depositedUSD(value: BigDecimal) {
+    this.set("depositedUSD", Value.fromBigDecimal(value));
+  }
 }
 
 export class Swap extends Entity {
@@ -760,5 +778,90 @@ export class User extends Entity {
 
   set swaps(value: Array<string>) {
     this.set("swaps", Value.fromStringArray(value));
+  }
+}
+
+export class Deposit extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Deposit entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Deposit entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Deposit", id.toString(), this);
+  }
+
+  static load(id: string): Deposit | null {
+    return store.get("Deposit", id) as Deposit | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get token(): string {
+    let value = this.get("token");
+    return value.toString();
+  }
+
+  set token(value: string) {
+    this.set("token", Value.fromString(value));
+  }
+
+  get pool(): string {
+    let value = this.get("pool");
+    return value.toString();
+  }
+
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
+  }
+
+  get amount(): BigDecimal {
+    let value = this.get("amount");
+    return value.toBigDecimal();
+  }
+
+  set amount(value: BigDecimal) {
+    this.set("amount", Value.fromBigDecimal(value));
+  }
+
+  get amountUsd(): BigDecimal {
+    let value = this.get("amountUsd");
+    return value.toBigDecimal();
+  }
+
+  set amountUsd(value: BigDecimal) {
+    this.set("amountUsd", Value.fromBigDecimal(value));
+  }
+
+  get sender(): Bytes {
+    let value = this.get("sender");
+    return value.toBytes();
+  }
+
+  set sender(value: Bytes) {
+    this.set("sender", Value.fromBytes(value));
   }
 }

@@ -24,8 +24,8 @@ dataSources:
         - name: AggregatorV3Interface
           file: ./abis/AggregatorV3Interface.json
       eventHandlers:
-        # - event: Deposited(indexed address,uint256,uint256)
-        #   handler: handleDeposited
+        - event: Deposited(indexed address,uint256,uint256)
+          handler: handleDeposited
         - event: Swapped(indexed address,indexed address,indexed address,uint256,uint256,bytes)
           handler: handleSwapped
       file: ./src/mapping.ts

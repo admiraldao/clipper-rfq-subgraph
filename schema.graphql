@@ -59,6 +59,10 @@ type Token @entity {
   tvl: BigDecimal!
   # total value locked from derived usd
   tvlUSD: BigDecimal!
+  # total amount deposited in pool
+  deposited: BigDecimal!
+  # total amount in USD deposited in pool
+  depositedUSD: BigDecimal!
 }
 
 type Swap @entity {
@@ -137,4 +141,20 @@ type User @entity {
   volumeUSD: BigDecimal!
   # list of trades made by the user
   swaps: [Swap!]! @derivedFrom(field: "sender")
+}
+
+type Deposit @entity {
+  id: ID!
+  # timestamp of transaction
+  timestamp: BigInt!
+  # deposited token
+  token: Token!
+  # pool deposited to
+  pool: Pool!
+  # deposited amount
+  amount: BigDecimal!
+  # captured usd value at the moment of transaction
+  amountUsd: BigDecimal!
+  # sender of the transaction
+  sender: Bytes!
 }

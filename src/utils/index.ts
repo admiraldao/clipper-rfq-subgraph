@@ -48,6 +48,8 @@ export function loadToken(tokenAddress: Address): Token {
     token.volumeUSD = BIG_DECIMAL_ZERO
     token.tvl = BIG_DECIMAL_ZERO
     token.tvlUSD = BIG_DECIMAL_ZERO
+    token.deposited = BIG_DECIMAL_ZERO
+    token.depositedUSD = BIG_DECIMAL_ZERO
 
     token.save()
   }
