@@ -197,6 +197,29 @@ export class ClipperDirectExchange extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  WRAPPER_CONTRACT(): Address {
+    let result = super.call(
+      "WRAPPER_CONTRACT",
+      "WRAPPER_CONTRACT():(address)",
+      []
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_WRAPPER_CONTRACT(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "WRAPPER_CONTRACT",
+      "WRAPPER_CONTRACT():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   allowance(owner: Address, spender: Address): BigInt {
     let result = super.call(
       "allowance",
@@ -616,8 +639,12 @@ export class ConstructorCall__Inputs {
     return this._call.inputValues[0].value.toAddress();
   }
 
+  get theWrapper(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
   get tokens(): Array<Address> {
-    return this._call.inputValues[1].value.toAddressArray();
+    return this._call.inputValues[2].value.toAddressArray();
   }
 }
 
@@ -837,6 +864,142 @@ export class IncreaseAllowanceCall__Outputs {
   }
 }
 
+export class SellEthForTokenCall extends ethereum.Call {
+  get inputs(): SellEthForTokenCall__Inputs {
+    return new SellEthForTokenCall__Inputs(this);
+  }
+
+  get outputs(): SellEthForTokenCall__Outputs {
+    return new SellEthForTokenCall__Outputs(this);
+  }
+}
+
+export class SellEthForTokenCall__Inputs {
+  _call: SellEthForTokenCall;
+
+  constructor(call: SellEthForTokenCall) {
+    this._call = call;
+  }
+
+  get outputToken(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get inputAmount(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get outputAmount(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get goodUntil(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get destinationAddress(): Address {
+    return this._call.inputValues[4].value.toAddress();
+  }
+
+  get theSignature(): SellEthForTokenCallTheSignatureStruct {
+    return this._call.inputValues[5].value.toTuple() as SellEthForTokenCallTheSignatureStruct;
+  }
+
+  get auxiliaryData(): Bytes {
+    return this._call.inputValues[6].value.toBytes();
+  }
+}
+
+export class SellEthForTokenCall__Outputs {
+  _call: SellEthForTokenCall;
+
+  constructor(call: SellEthForTokenCall) {
+    this._call = call;
+  }
+}
+
+export class SellEthForTokenCallTheSignatureStruct extends ethereum.Tuple {
+  get v(): i32 {
+    return this[0].toI32();
+  }
+
+  get r(): Bytes {
+    return this[1].toBytes();
+  }
+
+  get s(): Bytes {
+    return this[2].toBytes();
+  }
+}
+
+export class SellTokenForEthCall extends ethereum.Call {
+  get inputs(): SellTokenForEthCall__Inputs {
+    return new SellTokenForEthCall__Inputs(this);
+  }
+
+  get outputs(): SellTokenForEthCall__Outputs {
+    return new SellTokenForEthCall__Outputs(this);
+  }
+}
+
+export class SellTokenForEthCall__Inputs {
+  _call: SellTokenForEthCall;
+
+  constructor(call: SellTokenForEthCall) {
+    this._call = call;
+  }
+
+  get inputToken(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get inputAmount(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get outputAmount(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get goodUntil(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get destinationAddress(): Address {
+    return this._call.inputValues[4].value.toAddress();
+  }
+
+  get theSignature(): SellTokenForEthCallTheSignatureStruct {
+    return this._call.inputValues[5].value.toTuple() as SellTokenForEthCallTheSignatureStruct;
+  }
+
+  get auxiliaryData(): Bytes {
+    return this._call.inputValues[6].value.toBytes();
+  }
+}
+
+export class SellTokenForEthCall__Outputs {
+  _call: SellTokenForEthCall;
+
+  constructor(call: SellTokenForEthCall) {
+    this._call = call;
+  }
+}
+
+export class SellTokenForEthCallTheSignatureStruct extends ethereum.Tuple {
+  get v(): i32 {
+    return this[0].toI32();
+  }
+
+  get r(): Bytes {
+    return this[1].toBytes();
+  }
+
+  get s(): Bytes {
+    return this[2].toBytes();
+  }
+}
+
 export class SwapCall extends ethereum.Call {
   get inputs(): SwapCall__Inputs {
     return new SwapCall__Inputs(this);
@@ -1006,28 +1169,24 @@ export class TransmitAndDepositCall__Inputs {
     this._call = call;
   }
 
-  get sender(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
   get depositAmounts(): Array<BigInt> {
-    return this._call.inputValues[1].value.toBigIntArray();
+    return this._call.inputValues[0].value.toBigIntArray();
   }
 
   get nDays(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt();
   }
 
   get poolTokens(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+    return this._call.inputValues[2].value.toBigInt();
   }
 
   get goodUntil(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 
   get theSignature(): TransmitAndDepositCallTheSignatureStruct {
-    return this._call.inputValues[5].value.toTuple() as TransmitAndDepositCallTheSignatureStruct;
+    return this._call.inputValues[4].value.toTuple() as TransmitAndDepositCallTheSignatureStruct;
   }
 }
 
@@ -1040,6 +1199,74 @@ export class TransmitAndDepositCall__Outputs {
 }
 
 export class TransmitAndDepositCallTheSignatureStruct extends ethereum.Tuple {
+  get v(): i32 {
+    return this[0].toI32();
+  }
+
+  get r(): Bytes {
+    return this[1].toBytes();
+  }
+
+  get s(): Bytes {
+    return this[2].toBytes();
+  }
+}
+
+export class TransmitAndSellTokenForEthCall extends ethereum.Call {
+  get inputs(): TransmitAndSellTokenForEthCall__Inputs {
+    return new TransmitAndSellTokenForEthCall__Inputs(this);
+  }
+
+  get outputs(): TransmitAndSellTokenForEthCall__Outputs {
+    return new TransmitAndSellTokenForEthCall__Outputs(this);
+  }
+}
+
+export class TransmitAndSellTokenForEthCall__Inputs {
+  _call: TransmitAndSellTokenForEthCall;
+
+  constructor(call: TransmitAndSellTokenForEthCall) {
+    this._call = call;
+  }
+
+  get inputToken(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get inputAmount(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get outputAmount(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get goodUntil(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get destinationAddress(): Address {
+    return this._call.inputValues[4].value.toAddress();
+  }
+
+  get theSignature(): TransmitAndSellTokenForEthCallTheSignatureStruct {
+    return this._call.inputValues[5].value.toTuple() as TransmitAndSellTokenForEthCallTheSignatureStruct;
+  }
+
+  get auxiliaryData(): Bytes {
+    return this._call.inputValues[6].value.toBytes();
+  }
+}
+
+export class TransmitAndSellTokenForEthCall__Outputs {
+  _call: TransmitAndSellTokenForEthCall;
+
+  constructor(call: TransmitAndSellTokenForEthCall) {
+    this._call = call;
+  }
+}
+
+export class TransmitAndSellTokenForEthCallTheSignatureStruct extends ethereum.Tuple {
   get v(): i32 {
     return this[0].toI32();
   }
@@ -1070,40 +1297,36 @@ export class TransmitAndSwapCall__Inputs {
     this._call = call;
   }
 
-  get sender(): Address {
+  get inputToken(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get inputToken(): Address {
+  get outputToken(): Address {
     return this._call.inputValues[1].value.toAddress();
   }
 
-  get outputToken(): Address {
-    return this._call.inputValues[2].value.toAddress();
-  }
-
   get inputAmount(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+    return this._call.inputValues[2].value.toBigInt();
   }
 
   get outputAmount(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 
   get goodUntil(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[4].value.toBigInt();
   }
 
   get destinationAddress(): Address {
-    return this._call.inputValues[6].value.toAddress();
+    return this._call.inputValues[5].value.toAddress();
   }
 
   get theSignature(): TransmitAndSwapCallTheSignatureStruct {
-    return this._call.inputValues[7].value.toTuple() as TransmitAndSwapCallTheSignatureStruct;
+    return this._call.inputValues[6].value.toTuple() as TransmitAndSwapCallTheSignatureStruct;
   }
 
   get auxiliaryData(): Bytes {
-    return this._call.inputValues[8].value.toBytes();
+    return this._call.inputValues[7].value.toBytes();
   }
 }
 

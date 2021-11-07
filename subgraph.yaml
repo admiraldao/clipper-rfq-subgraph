@@ -6,7 +6,7 @@ dataSources:
     name: ClipperDirectExchange
     network: matic
     source:
-      address: '0x69107C1Fc1Dbf486EA64ad4Fe6f9be81b8265f92'
+      address: '0xD01e3549160c62Acabc4D0EB89F67aAFA3de8EEd'
       abi: ClipperDirectExchange
       startBlock: 20404384
     mapping:
