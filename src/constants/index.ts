@@ -1,7 +1,7 @@
 import { BigInt, BigDecimal, TypedMap } from '@graphprotocol/graph-ts'
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
-export const DIRECT_EXCHANGE_ADDRESS = '0x69107C1Fc1Dbf486EA64ad4Fe6f9be81b8265f92'
+export const DIRECT_EXCHANGE_ADDRESS = '0xD01e3549160c62Acabc4D0EB89F67aAFA3de8EEd'
 
 export let BIG_DECIMAL_ZERO = BigDecimal.fromString('0')
 export let BIG_DECIMAL_ONE = BigDecimal.fromString('1')
