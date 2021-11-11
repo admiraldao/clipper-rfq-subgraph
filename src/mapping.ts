@@ -86,17 +86,31 @@ export function handleSwapped(event: Swapped): void {
   swap.pool = DIRECT_EXCHANGE_ADDRESS
 
   // update assets values
-  outAsset.txCount = outAsset.txCount.plus(BIG_INT_ONE)
-  outAsset.volume = outAsset.volume.plus(amountOut)
-  outAsset.volumeUSD = outAsset.volumeUSD.plus(amountOutUsd)
-  outAsset.tvl = outAsset.tvl.minus(amountOut)
-  outAsset.tvlUSD = outAsset.tvlUSD.minus(amountOutUsd)
 
-  inAsset.txCount = inAsset.txCount.plus(BIG_INT_ONE)
-  inAsset.volume = inAsset.volume.plus(amountIn)
-  inAsset.volumeUSD = inAsset.volumeUSD.plus(amountInUsd)
-  inAsset.tvl = inAsset.tvl.plus(amountIn)
-  inAsset.tvlUSD = inAsset.tvlUSD.plus(amountInUsd)
+  // if both assets are the same, update just one with the subtraction of both amounts
+  if (inAsset.id === outAsset.id) {
+    // TODO: Should think about if we should make +2 rather than +1
+    inAsset.txCount = inAsset.txCount.plus(BIG_INT_ONE)
+    inAsset.volume = inAsset.volume.plus(amountIn.plus(amountOut).div(BigDecimal.fromString('2')))
+    inAsset.volumeUSD = inAsset.volumeUSD.plus(transactionVolume)
+    inAsset.tvl = inAsset.tvl.plus(amountIn.minus(amountOut))
+    inAsset.tvlUSD = inAsset.tvlUSD.plus(amountInUsd.minus(amountOutUsd))
+    inAsset.save()
+  } else {
+    outAsset.txCount = outAsset.txCount.plus(BIG_INT_ONE)
+    outAsset.volume = outAsset.volume.plus(amountOut)
+    outAsset.volumeUSD = outAsset.volumeUSD.plus(amountOutUsd)
+    outAsset.tvl = outAsset.tvl.minus(amountOut)
+    outAsset.tvlUSD = outAsset.tvlUSD.minus(amountOutUsd)
+    outAsset.save()
+
+    inAsset.txCount = inAsset.txCount.plus(BIG_INT_ONE)
+    inAsset.volume = inAsset.volume.plus(amountIn)
+    inAsset.volumeUSD = inAsset.volumeUSD.plus(amountInUsd)
+    inAsset.tvl = inAsset.tvl.plus(amountIn)
+    inAsset.tvlUSD = inAsset.tvlUSD.plus(amountInUsd)
+    inAsset.save()
+  }
 
   let txSource = loadTransactionSource(event)
   swap.transactionSource = txSource.id
@@ -112,8 +126,6 @@ export function handleSwapped(event: Swapped): void {
   swap.sender = event.transaction.from.toHexString()
   updatePoolStatus(event.block.timestamp, transactionVolume, isUnique)
 
-  inAsset.save()
-  outAsset.save()
   swap.save()
   txSource.save()
 }
