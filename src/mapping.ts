@@ -1,14 +1,12 @@
 import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import {
   ClipperDirectExchange,
-  // Approval,
   Deposited,
   Swapped,
-  Transfer,
   Withdrawn,
 } from '../types/ClipperDirectExchange/ClipperDirectExchange'
 import { ERC20 } from '../types/ClipperDirectExchange/ERC20'
-import { Deposit, Swap } from '../types/schema'
+import { Deposit, Swap, Withdrawal } from '../types/schema'
 import { BIG_INT_ONE, DIRECT_EXCHANGE_ADDRESS } from './constants'
 import { updatePair } from './entities/Pair'
 import { loadPool, updatePoolStatus } from './entities/Pool'
@@ -120,6 +118,44 @@ export function handleSwapped(event: Swapped): void {
   txSource.save()
 }
 
-export function handleTransfer(event: Transfer): void {}
+export function handleWithdrawn(event: Withdrawn): void {
+  let pool = loadPool()
+  let poolAddress = Address.fromString(pool.id)
+  let poolContract = ClipperDirectExchange.bind(poolAddress)
+  let nTokens = poolContract.nTokens()
+  let timestamp = event.block.timestamp
+  let txHash = event.transaction.hash.toHexString()
 
-export function handleWithdrawn(event: Withdrawn): void {}
+  for (let i: i32 = 0; i < nTokens.toI32(); i++) {
+    let nToken = poolContract.tokenAt(BigInt.fromI32(i))
+    let tokenContract = ERC20.bind(nToken)
+    let token = loadToken(nToken)
+    let tokenBalance = tokenContract.balanceOf(poolAddress)
+    let decimalTokenBalance = convertTokenToDecimal(tokenBalance, token.decimals)
+    let withdrawnAmount = decimalTokenBalance.minus(token.tvl).times(BigDecimal.fromString('-1'))
+    let tokenUsdPrice = getUsdPrice(token.symbol)
+    let withdrawalUSD = tokenUsdPrice.times(withdrawnAmount)
+    let newWithdrawal = new Withdrawal(
+      timestamp
+        .toString()
+        .concat('-')
+        .concat(txHash)
+        .concat('-')
+        .concat(token.id),
+    )
+    newWithdrawal.timestamp = timestamp
+    newWithdrawal.amount = withdrawnAmount
+    newWithdrawal.token = token.id
+    newWithdrawal.amountUsd = withdrawalUSD
+    newWithdrawal.pool = pool.id
+    newWithdrawal.withdrawer = event.params.withdrawer
+
+    token.tvl = token.tvl.minus(withdrawnAmount)
+    token.tvlUSD = token.tvlUSD.minus(withdrawalUSD)
+    token.deposited = token.deposited.minus(withdrawnAmount)
+    token.depositedUSD = token.depositedUSD.minus(withdrawalUSD)
+
+    newWithdrawal.save()
+    token.save()
+  }
+}

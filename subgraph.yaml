@@ -14,7 +14,8 @@ dataSources:
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-        # - Deposited
+        - Deposited
+        - Withdrawn
         - Swapped
       abis:
         - name: ClipperDirectExchange
@@ -26,6 +27,8 @@ dataSources:
       eventHandlers:
         - event: Deposited(indexed address,uint256,uint256)
           handler: handleDeposited
+        - event: Withdrawn(indexed address,uint256,uint256)
+          handler: handleWithdrawn
         - event: Swapped(indexed address,indexed address,indexed address,uint256,uint256,bytes)
           handler: handleSwapped
       file: ./src/mapping.ts

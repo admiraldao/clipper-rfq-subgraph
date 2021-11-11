@@ -865,3 +865,88 @@ export class Deposit extends Entity {
     this.set("sender", Value.fromBytes(value));
   }
 }
+
+export class Withdrawal extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Withdrawal entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Withdrawal entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Withdrawal", id.toString(), this);
+  }
+
+  static load(id: string): Withdrawal | null {
+    return store.get("Withdrawal", id) as Withdrawal | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get token(): string {
+    let value = this.get("token");
+    return value.toString();
+  }
+
+  set token(value: string) {
+    this.set("token", Value.fromString(value));
+  }
+
+  get pool(): string {
+    let value = this.get("pool");
+    return value.toString();
+  }
+
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
+  }
+
+  get amount(): BigDecimal {
+    let value = this.get("amount");
+    return value.toBigDecimal();
+  }
+
+  set amount(value: BigDecimal) {
+    this.set("amount", Value.fromBigDecimal(value));
+  }
+
+  get amountUsd(): BigDecimal {
+    let value = this.get("amountUsd");
+    return value.toBigDecimal();
+  }
+
+  set amountUsd(value: BigDecimal) {
+    this.set("amountUsd", Value.fromBigDecimal(value));
+  }
+
+  get withdrawer(): Bytes {
+    let value = this.get("withdrawer");
+    return value.toBytes();
+  }
+
+  set withdrawer(value: Bytes) {
+    this.set("withdrawer", Value.fromBytes(value));
+  }
+}

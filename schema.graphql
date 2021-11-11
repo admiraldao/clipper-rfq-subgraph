@@ -158,3 +158,19 @@ type Deposit @entity {
   # sender of the transaction
   sender: Bytes!
 }
+
+type Withdrawal @entity {
+  id: ID!
+  # timestamp of transaction
+  timestamp: BigInt!
+  # withdrawn token
+  token: Token!
+  # pool to where the whitdrawal was done
+  pool: Pool!
+  # withdrawn amount
+  amount: BigDecimal!
+  # captured usd value at the moment of transaction
+  amountUsd: BigDecimal!
+  # withdrawer of the transaction
+  withdrawer: Bytes!
+}
