@@ -6,7 +6,7 @@ import {
   Withdrawn,
 } from '../types/ClipperDirectExchange/ClipperDirectExchange'
 import { Deposit, Swap, Withdrawal } from '../types/schema'
-import { BIG_INT_ONE, DIRECT_EXCHANGE_ADDRESS } from './constants'
+import { BIG_DECIMAL_ZERO, BIG_INT_ONE, DIRECT_EXCHANGE_ADDRESS } from './constants'
 import { updatePair } from './entities/Pair'
 import { loadPool, updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
@@ -27,30 +27,34 @@ export function handleDeposited(event: Deposited): void {
     let token = loadToken(nToken)
     let decimalTokenBalance = fetchTokenBalance(token, poolAddress)
     let depositAmount = decimalTokenBalance.minus(token.tvl)
-    let tokenUsdPrice = getUsdPrice(token.symbol)
-    let depositUSD = tokenUsdPrice.times(depositAmount)
-    let newDeposit = new Deposit(
-      timestamp
-        .toString()
-        .concat('-')
-        .concat(txHash)
-        .concat('-')
-        .concat(token.id),
-    )
-    newDeposit.timestamp = timestamp
-    newDeposit.amount = depositAmount
-    newDeposit.token = token.id
-    newDeposit.amountUsd = depositUSD
-    newDeposit.pool = pool.id
-    newDeposit.sender = event.params.depositor
 
-    token.tvl = token.tvl.plus(depositAmount)
-    token.tvlUSD = token.tvlUSD.plus(depositUSD)
-    token.deposited = token.deposited.plus(depositAmount)
-    token.depositedUSD = token.depositedUSD.plus(depositUSD)
+    // only run deposit logic if deposit amount is greater than zero, otherwise, leave the store as it was.
+    if (depositAmount.gt(BIG_DECIMAL_ZERO)) {
+      let tokenUsdPrice = getUsdPrice(token.symbol)
+      let depositUSD = tokenUsdPrice.times(depositAmount)
+      let newDeposit = new Deposit(
+        timestamp
+          .toString()
+          .concat('-')
+          .concat(txHash)
+          .concat('-')
+          .concat(token.id),
+      )
+      newDeposit.timestamp = timestamp
+      newDeposit.amount = depositAmount
+      newDeposit.token = token.id
+      newDeposit.amountUsd = depositUSD
+      newDeposit.pool = pool.id
+      newDeposit.sender = event.params.depositor
 
-    newDeposit.save()
-    token.save()
+      token.tvl = token.tvl.plus(depositAmount)
+      token.tvlUSD = token.tvlUSD.plus(depositUSD)
+      token.deposited = token.deposited.plus(depositAmount)
+      token.depositedUSD = token.depositedUSD.plus(depositUSD)
+
+      newDeposit.save()
+      token.save()
+    }
   }
 }
 
