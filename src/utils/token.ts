@@ -1,5 +1,7 @@
-import { Address, BigInt } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { convertTokenToDecimal } from '.'
 import { ERC20 } from '../../types/ClipperDirectExchange/ERC20'
+import { Token } from '../../types/schema'
 import { ADDRESS_ZERO } from '../constants'
 
 export function fetchTokenSymbol(tokenAddress: Address): string {
@@ -49,4 +51,13 @@ export function fetchTokenName(tokenAddress: Address): string {
   }
 
   return nameValue
+}
+
+export function fetchTokenBalance(token: Token, wallet: Address): BigDecimal {
+  let tokenContract = ERC20.bind(Address.fromString(token.id))
+
+  let tokenBigBalance = tokenContract.balanceOf(wallet)
+  let tokenBalance = convertTokenToDecimal(tokenBigBalance, token.decimals)
+
+  return tokenBalance
 }
