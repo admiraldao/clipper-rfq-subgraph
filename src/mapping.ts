@@ -47,8 +47,8 @@ export function handleDeposited(event: Deposited): void {
       newDeposit.pool = pool.id
       newDeposit.sender = event.params.depositor
 
-      token.tvl = token.tvl.plus(depositAmount)
-      token.tvlUSD = token.tvlUSD.plus(depositUSD)
+      token.tvl = decimalTokenBalance
+      token.tvlUSD = decimalTokenBalance.times(tokenUsdPrice)
       token.deposited = token.deposited.plus(depositAmount)
       token.depositedUSD = token.depositedUSD.plus(depositUSD)
 
@@ -70,31 +70,34 @@ export function handleWithdrawn(event: Withdrawn): void {
     let nToken = poolContract.tokenAt(BigInt.fromI32(i))
     let token = loadToken(nToken)
     let decimalTokenBalance = fetchTokenBalance(token, poolAddress)
-    let withdrawnAmount = decimalTokenBalance.minus(token.tvl).times(BigDecimal.fromString('-1'))
-    let tokenUsdPrice = getUsdPrice(token.symbol)
-    let withdrawalUSD = tokenUsdPrice.times(withdrawnAmount)
-    let newWithdrawal = new Withdrawal(
-      timestamp
-        .toString()
-        .concat('-')
-        .concat(txHash)
-        .concat('-')
-        .concat(token.id),
-    )
-    newWithdrawal.timestamp = timestamp
-    newWithdrawal.amount = withdrawnAmount
-    newWithdrawal.token = token.id
-    newWithdrawal.amountUsd = withdrawalUSD
-    newWithdrawal.pool = pool.id
-    newWithdrawal.withdrawer = event.params.withdrawer
+    let withdrawnAmount = token.tvl.minus(decimalTokenBalance)
 
-    token.tvl = token.tvl.minus(withdrawnAmount)
-    token.tvlUSD = token.tvlUSD.minus(withdrawalUSD)
-    token.deposited = token.deposited.minus(withdrawnAmount)
-    token.depositedUSD = token.depositedUSD.minus(withdrawalUSD)
+    if (withdrawnAmount.gt(BIG_DECIMAL_ZERO)) {
+      let tokenUsdPrice = getUsdPrice(token.symbol)
+      let withdrawalUSD = tokenUsdPrice.times(withdrawnAmount)
+      let newWithdrawal = new Withdrawal(
+        timestamp
+          .toString()
+          .concat('-')
+          .concat(txHash)
+          .concat('-')
+          .concat(token.id),
+      )
+      newWithdrawal.timestamp = timestamp
+      newWithdrawal.amount = withdrawnAmount
+      newWithdrawal.token = token.id
+      newWithdrawal.amountUsd = withdrawalUSD
+      newWithdrawal.pool = pool.id
+      newWithdrawal.withdrawer = event.params.withdrawer
 
-    newWithdrawal.save()
-    token.save()
+      token.tvl = decimalTokenBalance
+      token.tvlUSD = decimalTokenBalance.times(tokenUsdPrice)
+      token.deposited = token.deposited.minus(withdrawnAmount)
+      token.depositedUSD = token.depositedUSD.minus(withdrawalUSD)
+
+      newWithdrawal.save()
+      token.save()
+    }
   }
 }
 
@@ -138,7 +141,6 @@ export function handleSwapped(event: Swapped): void {
 
   // if both assets are the same, update just one with the subtraction of both amounts
   if (inAsset.id === outAsset.id) {
-    // TODO: Should think about if we should make +2 rather than +1
     inAsset.txCount = inAsset.txCount.plus(BIG_INT_ONE)
     inAsset.volume = inAsset.volume.plus(amountIn.plus(amountOut).div(BigDecimal.fromString('2')))
     inAsset.volumeUSD = inAsset.volumeUSD.plus(transactionVolume)
@@ -156,8 +158,8 @@ export function handleSwapped(event: Swapped): void {
     inAsset.txCount = inAsset.txCount.plus(BIG_INT_ONE)
     inAsset.volume = inAsset.volume.plus(amountIn)
     inAsset.volumeUSD = inAsset.volumeUSD.plus(amountInUsd)
-    inAsset.tvl = inAsset.tvl.plus(amountIn)
-    inAsset.tvlUSD = inAsset.tvlUSD.plus(amountInUsd)
+    inAsset.tvl = inTokenBalance
+    inAsset.tvlUSD = inTokenBalanceUsd
     inAsset.save()
   }
 
