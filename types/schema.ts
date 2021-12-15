@@ -864,6 +864,15 @@ export class Deposit extends Entity {
   set sender(value: Bytes) {
     this.set("sender", Value.fromBytes(value));
   }
+
+  get poolTokens(): BigInt {
+    let value = this.get("poolTokens");
+    return value.toBigInt();
+  }
+
+  set poolTokens(value: BigInt) {
+    this.set("poolTokens", Value.fromBigInt(value));
+  }
 }
 
 export class Withdrawal extends Entity {

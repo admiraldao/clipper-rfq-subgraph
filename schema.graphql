@@ -157,6 +157,8 @@ type Deposit @entity {
   amountUsd: BigDecimal!
   # sender of the transaction
   sender: Bytes!
+  # pool tokens received by the deposit
+  poolTokens: BigInt!
 }
 
 type Withdrawal @entity {

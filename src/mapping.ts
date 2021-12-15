@@ -46,6 +46,7 @@ export function handleDeposited(event: Deposited): void {
       newDeposit.amountUsd = depositUSD
       newDeposit.pool = pool.id
       newDeposit.sender = event.params.depositor
+      newDeposit.poolTokens = event.params.poolTokens
 
       token.tvl = decimalTokenBalance
       token.tvlUSD = decimalTokenBalance.times(tokenUsdPrice)
