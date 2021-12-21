@@ -820,15 +820,6 @@ export class Deposit extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get token(): string {
-    let value = this.get("token");
-    return value.toString();
-  }
-
-  set token(value: string) {
-    this.set("token", Value.fromString(value));
-  }
-
   get pool(): string {
     let value = this.get("pool");
     return value.toString();
@@ -838,13 +829,13 @@ export class Deposit extends Entity {
     this.set("pool", Value.fromString(value));
   }
 
-  get amount(): BigDecimal {
-    let value = this.get("amount");
+  get poolTokens(): BigDecimal {
+    let value = this.get("poolTokens");
     return value.toBigDecimal();
   }
 
-  set amount(value: BigDecimal) {
-    this.set("amount", Value.fromBigDecimal(value));
+  set poolTokens(value: BigDecimal) {
+    this.set("poolTokens", Value.fromBigDecimal(value));
   }
 
   get amountUsd(): BigDecimal {
@@ -856,22 +847,13 @@ export class Deposit extends Entity {
     this.set("amountUsd", Value.fromBigDecimal(value));
   }
 
-  get sender(): Bytes {
-    let value = this.get("sender");
+  get depositor(): Bytes {
+    let value = this.get("depositor");
     return value.toBytes();
   }
 
-  set sender(value: Bytes) {
-    this.set("sender", Value.fromBytes(value));
-  }
-
-  get poolTokens(): BigInt {
-    let value = this.get("poolTokens");
-    return value.toBigInt();
-  }
-
-  set poolTokens(value: BigInt) {
-    this.set("poolTokens", Value.fromBigInt(value));
+  set depositor(value: Bytes) {
+    this.set("depositor", Value.fromBytes(value));
   }
 }
 
@@ -914,15 +896,6 @@ export class Withdrawal extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get token(): string {
-    let value = this.get("token");
-    return value.toString();
-  }
-
-  set token(value: string) {
-    this.set("token", Value.fromString(value));
-  }
-
   get pool(): string {
     let value = this.get("pool");
     return value.toString();
@@ -932,13 +905,13 @@ export class Withdrawal extends Entity {
     this.set("pool", Value.fromString(value));
   }
 
-  get amount(): BigDecimal {
-    let value = this.get("amount");
+  get poolTokens(): BigDecimal {
+    let value = this.get("poolTokens");
     return value.toBigDecimal();
   }
 
-  set amount(value: BigDecimal) {
-    this.set("amount", Value.fromBigDecimal(value));
+  set poolTokens(value: BigDecimal) {
+    this.set("poolTokens", Value.fromBigDecimal(value));
   }
 
   get amountUsd(): BigDecimal {

@@ -147,30 +147,24 @@ type Deposit @entity {
   id: ID!
   # timestamp of transaction
   timestamp: BigInt!
-  # deposited token
-  token: Token!
   # pool deposited to
   pool: Pool!
-  # deposited amount
-  amount: BigDecimal!
-  # captured usd value at the moment of transaction
+  # pool tokens received by the deposit
+  poolTokens: BigDecimal!
+  # The equivalent usd value of received pool tokens at the moment of tx
   amountUsd: BigDecimal!
   # sender of the transaction
-  sender: Bytes!
-  # pool tokens received by the deposit
-  poolTokens: BigInt!
+  depositor: Bytes!
 }
 
 type Withdrawal @entity {
   id: ID!
   # timestamp of transaction
   timestamp: BigInt!
-  # withdrawn token
-  token: Token!
   # pool to where the whitdrawal was done
   pool: Pool!
-  # withdrawn amount
-  amount: BigDecimal!
+  # Pool tokens burned to withdraw
+  poolTokens: BigDecimal!
   # captured usd value at the moment of transaction
   amountUsd: BigDecimal!
   # withdrawer of the transaction

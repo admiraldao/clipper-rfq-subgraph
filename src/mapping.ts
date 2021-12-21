@@ -10,96 +10,55 @@ import { BIG_DECIMAL_ZERO, BIG_INT_ONE, DIRECT_EXCHANGE_ADDRESS } from './consta
 import { updatePair } from './entities/Pair'
 import { loadPool, updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
-import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils'
+import { convertTokenToDecimal, getCurrentPoolLiquidity, loadToken, loadTransactionSource } from './utils'
 import { getUsdPrice } from './utils/prices'
 import { fetchTokenBalance } from './utils/token'
 
 export function handleDeposited(event: Deposited): void {
-  let pool = loadPool()
-  let poolAddress = Address.fromString(pool.id)
-  let poolContract = ClipperDirectExchange.bind(poolAddress)
-  let nTokens = poolContract.nTokens()
   let timestamp = event.block.timestamp
   let txHash = event.transaction.hash.toHexString()
+  let currentPoolLiquidity = getCurrentPoolLiquidity()
+  let poolAddress = Address.fromString(DIRECT_EXCHANGE_ADDRESS)
+  let poolContract = ClipperDirectExchange.bind(poolAddress)
+  let poolTokenSupply = poolContract.totalSupply()
+  let receivedPoolTokens = convertTokenToDecimal(event.params.poolTokens, BigInt.fromI32(18))
+  let totalPoolTokens = convertTokenToDecimal(poolTokenSupply, BigInt.fromI32(18))
 
-  for (let i: i32 = 0; i < nTokens.toI32(); i++) {
-    let nToken = poolContract.tokenAt(BigInt.fromI32(i))
-    let token = loadToken(nToken)
-    let decimalTokenBalance = fetchTokenBalance(token, poolAddress)
-    let depositAmount = decimalTokenBalance.minus(token.tvl)
+  let poolOwnedAmount = receivedPoolTokens.div(totalPoolTokens)
+  let usdProportion = currentPoolLiquidity.times(poolOwnedAmount)
 
-    // only run deposit logic if deposit amount is greater than zero, otherwise, leave the store as it was.
-    if (depositAmount.gt(BIG_DECIMAL_ZERO)) {
-      let tokenUsdPrice = getUsdPrice(token.symbol)
-      let depositUSD = tokenUsdPrice.times(depositAmount)
-      let newDeposit = new Deposit(
-        timestamp
-          .toString()
-          .concat('-')
-          .concat(txHash)
-          .concat('-')
-          .concat(token.id),
-      )
-      newDeposit.timestamp = timestamp
-      newDeposit.amount = depositAmount
-      newDeposit.token = token.id
-      newDeposit.amountUsd = depositUSD
-      newDeposit.pool = pool.id
-      newDeposit.sender = event.params.depositor
-      newDeposit.poolTokens = event.params.poolTokens
+  let newDeposit = new Deposit(txHash)
+  newDeposit.timestamp = timestamp
+  newDeposit.pool = DIRECT_EXCHANGE_ADDRESS
+  newDeposit.poolTokens = receivedPoolTokens
+  newDeposit.amountUsd = usdProportion
+  newDeposit.depositor = event.params.depositor
 
-      token.tvl = decimalTokenBalance
-      token.tvlUSD = decimalTokenBalance.times(tokenUsdPrice)
-      token.deposited = token.deposited.plus(depositAmount)
-      token.depositedUSD = token.depositedUSD.plus(depositUSD)
-
-      newDeposit.save()
-      token.save()
-    }
-  }
+  newDeposit.save()
 }
 
 export function handleWithdrawn(event: Withdrawn): void {
-  let pool = loadPool()
-  let poolAddress = Address.fromString(pool.id)
-  let poolContract = ClipperDirectExchange.bind(poolAddress)
-  let nTokens = poolContract.nTokens()
   let timestamp = event.block.timestamp
   let txHash = event.transaction.hash.toHexString()
+  let currentPoolLiquidity = getCurrentPoolLiquidity()
+  let poolAddress = Address.fromString(DIRECT_EXCHANGE_ADDRESS)
+  let poolContract = ClipperDirectExchange.bind(poolAddress)
+  let poolTokenSupply = poolContract.totalSupply()
 
-  for (let i: i32 = 0; i < nTokens.toI32(); i++) {
-    let nToken = poolContract.tokenAt(BigInt.fromI32(i))
-    let token = loadToken(nToken)
-    let decimalTokenBalance = fetchTokenBalance(token, poolAddress)
-    let withdrawnAmount = token.tvl.minus(decimalTokenBalance)
+  let totalPoolTokens = convertTokenToDecimal(poolTokenSupply, BigInt.fromI32(18))
+  let burntPoolTokens = convertTokenToDecimal(event.params.poolTokens, BigInt.fromI32(18))
 
-    if (withdrawnAmount.gt(BIG_DECIMAL_ZERO)) {
-      let tokenUsdPrice = getUsdPrice(token.symbol)
-      let withdrawalUSD = tokenUsdPrice.times(withdrawnAmount)
-      let newWithdrawal = new Withdrawal(
-        timestamp
-          .toString()
-          .concat('-')
-          .concat(txHash)
-          .concat('-')
-          .concat(token.id),
-      )
-      newWithdrawal.timestamp = timestamp
-      newWithdrawal.amount = withdrawnAmount
-      newWithdrawal.token = token.id
-      newWithdrawal.amountUsd = withdrawalUSD
-      newWithdrawal.pool = pool.id
-      newWithdrawal.withdrawer = event.params.withdrawer
+  let burntProportion = burntPoolTokens.div(totalPoolTokens.plus(burntPoolTokens))
+  let usdProportion = currentPoolLiquidity.times(burntProportion)
 
-      token.tvl = decimalTokenBalance
-      token.tvlUSD = decimalTokenBalance.times(tokenUsdPrice)
-      token.deposited = token.deposited.minus(withdrawnAmount)
-      token.depositedUSD = token.depositedUSD.minus(withdrawalUSD)
+  let newWithdrawal = new Withdrawal(txHash)
+  newWithdrawal.timestamp = timestamp
+  newWithdrawal.amountUsd = usdProportion
+  newWithdrawal.poolTokens = burntPoolTokens
+  newWithdrawal.pool = DIRECT_EXCHANGE_ADDRESS
+  newWithdrawal.withdrawer = event.params.withdrawer
 
-      newWithdrawal.save()
-      token.save()
-    }
-  }
+  newWithdrawal.save()
 }
 
 export function handleSwapped(event: Swapped): void {
