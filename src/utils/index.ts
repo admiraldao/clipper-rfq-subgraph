@@ -1,10 +1,8 @@
 import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import { ClipperDirectExchange, Swapped } from '../../types/ClipperDirectExchange/ClipperDirectExchange'
+import { Swapped } from '../../types/ClipperDirectExchange/ClipperDirectExchange'
 import { Token, TransactionSource } from '../../types/schema'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO } from '../constants'
-import { loadPool } from '../entities/Pool'
-import { getUsdPrice } from './prices'
-import { fetchTokenBalance, fetchTokenDecimals, fetchTokenName, fetchTokenSymbol } from './token'
+import { fetchTokenDecimals, fetchTokenName, fetchTokenSymbol } from './token'
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
   let bd = BigDecimal.fromString('1')
@@ -56,28 +54,4 @@ export function loadToken(tokenAddress: Address): Token {
   }
 
   return token as Token
-}
-
-export function getCurrentPoolLiquidity(): BigDecimal {
-  let pool = loadPool()
-  let poolAddress = Address.fromString(pool.id)
-  let poolContract = ClipperDirectExchange.bind(poolAddress)
-  let nTokens = poolContract.nTokens()
-  let currentLiquidity = BigDecimal.fromString('0')
-
-  for (let i: i32 = 0; i < nTokens.toI32(); i++) {
-    let nToken = poolContract.tokenAt(BigInt.fromI32(i))
-    let token = loadToken(nToken)
-    let tokenBalance = fetchTokenBalance(token, poolAddress)
-    let tokenUsdPrice = getUsdPrice(token.symbol)
-    let usdTokenLiquidity = tokenBalance.times(tokenUsdPrice)
-
-    currentLiquidity = currentLiquidity.plus(usdTokenLiquidity)
-
-    token.tvl = tokenBalance
-    token.tvlUSD = tokenUsdPrice
-    token.save()
-  }
-
-  return currentLiquidity
 }

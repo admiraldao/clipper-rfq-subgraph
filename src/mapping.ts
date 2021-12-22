@@ -6,21 +6,21 @@ import {
   Withdrawn,
 } from '../types/ClipperDirectExchange/ClipperDirectExchange'
 import { Deposit, Swap, Withdrawal } from '../types/schema'
-import { BIG_DECIMAL_ZERO, BIG_INT_ONE, DIRECT_EXCHANGE_ADDRESS } from './constants'
+import { BIG_INT_ONE, DIRECT_EXCHANGE_ADDRESS } from './constants'
 import { updatePair } from './entities/Pair'
 import { loadPool, updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
-import { convertTokenToDecimal, getCurrentPoolLiquidity, loadToken, loadTransactionSource } from './utils'
+import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils'
+import { getCurrentPoolLiquidity, getPoolTokenSupply } from './utils/pool'
 import { getUsdPrice } from './utils/prices'
 import { fetchTokenBalance } from './utils/token'
 
 export function handleDeposited(event: Deposited): void {
+  let pool = loadPool()
   let timestamp = event.block.timestamp
   let txHash = event.transaction.hash.toHexString()
-  let currentPoolLiquidity = getCurrentPoolLiquidity()
-  let poolAddress = Address.fromString(DIRECT_EXCHANGE_ADDRESS)
-  let poolContract = ClipperDirectExchange.bind(poolAddress)
-  let poolTokenSupply = poolContract.totalSupply()
+  let currentPoolLiquidity = getCurrentPoolLiquidity(pool.id)
+  let poolTokenSupply = getPoolTokenSupply(pool.id)
   let receivedPoolTokens = convertTokenToDecimal(event.params.poolTokens, BigInt.fromI32(18))
   let totalPoolTokens = convertTokenToDecimal(poolTokenSupply, BigInt.fromI32(18))
 
@@ -34,16 +34,18 @@ export function handleDeposited(event: Deposited): void {
   newDeposit.amountUsd = usdProportion
   newDeposit.depositor = event.params.depositor
 
+  pool.poolTokensSupply = poolTokenSupply
+
   newDeposit.save()
+  pool.save()
 }
 
 export function handleWithdrawn(event: Withdrawn): void {
+  let pool = loadPool()
   let timestamp = event.block.timestamp
   let txHash = event.transaction.hash.toHexString()
-  let currentPoolLiquidity = getCurrentPoolLiquidity()
-  let poolAddress = Address.fromString(DIRECT_EXCHANGE_ADDRESS)
-  let poolContract = ClipperDirectExchange.bind(poolAddress)
-  let poolTokenSupply = poolContract.totalSupply()
+  let currentPoolLiquidity = getCurrentPoolLiquidity(pool.id)
+  let poolTokenSupply = getPoolTokenSupply(pool.id)
 
   let totalPoolTokens = convertTokenToDecimal(poolTokenSupply, BigInt.fromI32(18))
   let burntPoolTokens = convertTokenToDecimal(event.params.poolTokens, BigInt.fromI32(18))
@@ -58,7 +60,10 @@ export function handleWithdrawn(event: Withdrawn): void {
   newWithdrawal.pool = DIRECT_EXCHANGE_ADDRESS
   newWithdrawal.withdrawer = event.params.withdrawer
 
+  pool.poolTokensSupply = poolTokenSupply
+
   newWithdrawal.save()
+  pool.save()
 }
 
 export function handleSwapped(event: Swapped): void {

@@ -1,6 +1,7 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { DailyPoolStatus, HourlyPoolStatus, Pool } from '../../types/schema'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO, DIRECT_EXCHANGE_ADDRESS, ONE_DAY, ONE_HOUR } from '../constants'
+import { getPoolTokenSupply } from '../utils/pool'
 import { getOpenTime } from '../utils/timeHelpers'
 
 export function loadPool(): Pool {
@@ -12,6 +13,7 @@ export function loadPool(): Pool {
     pool.volumeUSD = BIG_DECIMAL_ZERO
     pool.txCount = BIG_INT_ZERO
     pool.uniqueUsers = BIG_INT_ZERO
+    pool.poolTokensSupply = BIG_INT_ZERO
 
     pool.save()
   }
@@ -47,6 +49,7 @@ function updateDailyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: Big
     .concat(to.toString())
 
   let dailyPoolStatus = DailyPoolStatus.load(id) as DailyPoolStatus
+  let poolTokensSupply = getPoolTokenSupply(pool.id)
 
   // TODO: refactor creating and updating to same function across different intervals (day, hour, etc ...)
   if (!dailyPoolStatus) {
@@ -62,6 +65,7 @@ function updateDailyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: Big
   dailyPoolStatus.txCount = dailyPoolStatus.txCount.plus(BIG_INT_ONE)
   dailyPoolStatus.volumeUSD = dailyPoolStatus.volumeUSD.plus(addedTxVolume)
   dailyPoolStatus.avgTrade = dailyPoolStatus.volumeUSD.div(dailyPoolStatus.txCount.toBigDecimal())
+  dailyPoolStatus.poolTokensSupply = poolTokensSupply
 
   dailyPoolStatus.save()
 

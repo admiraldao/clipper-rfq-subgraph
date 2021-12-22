@@ -9,6 +9,8 @@ type Pool @entity {
   txCount: BigInt!
   # number of all time unique users
   uniqueUsers: BigInt!
+  # number of pool tokens supplied by the smart contract (used for time-travel queries)
+  poolTokensSupply: BigInt!
   # time snapshots of pool data
   dailyHistory: [DailyPoolStatus!]! @derivedFrom(field: "pool")
   hourlyHistory: [HourlyPoolStatus!]! @derivedFrom(field: "pool")
@@ -25,6 +27,8 @@ type DailyPoolStatus @entity {
   volumeUSD: BigDecimal!
   # Average trade amount of all time in USD
   avgTrade: BigDecimal!
+  # snapshot of number of pool tokens supplied by the smart contract
+  poolTokensSupply: BigInt!
 }
 
 type HourlyPoolStatus @entity {

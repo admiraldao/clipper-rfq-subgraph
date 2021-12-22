@@ -78,6 +78,15 @@ export class Pool extends Entity {
     this.set("uniqueUsers", Value.fromBigInt(value));
   }
 
+  get poolTokensSupply(): BigInt {
+    let value = this.get("poolTokensSupply");
+    return value.toBigInt();
+  }
+
+  set poolTokensSupply(value: BigInt) {
+    this.set("poolTokensSupply", Value.fromBigInt(value));
+  }
+
   get dailyHistory(): Array<string> {
     let value = this.get("dailyHistory");
     return value.toStringArray();
@@ -179,6 +188,15 @@ export class DailyPoolStatus extends Entity {
 
   set avgTrade(value: BigDecimal) {
     this.set("avgTrade", Value.fromBigDecimal(value));
+  }
+
+  get poolTokensSupply(): BigInt {
+    let value = this.get("poolTokensSupply");
+    return value.toBigInt();
+  }
+
+  set poolTokensSupply(value: BigInt) {
+    this.set("poolTokensSupply", Value.fromBigInt(value));
   }
 }
 
