@@ -18,6 +18,7 @@ interface Deployment {
   usdtOracleAddress: string
   jpyOracleAddress: string
   maticOracleAddress: string
+  dotOracleAddress: string
 }
 
 async function fetchDeployment(source: string): Promise<Deployment> {
@@ -37,6 +38,28 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       usdtOracleAddress: '0x0A6513e40db6EB1b165753AD52E80663aeA50545',
       jpyOracleAddress: '0xD647a6fC9BC6402301583C91decC5989d8Bc382D',
       maticOracleAddress: '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0',
+      dotOracleAddress: '0x0000000000000000000000000000000000000000'
+    }
+  }
+
+  if (source === 'moonbase') {
+    return {
+      networkName: 'mbase',
+      startBlock: 1518878,
+
+      // Core
+      clipperDirectExchange: '0xc2dc657a3eef28f48bad9c3db27e33c4a76efd4c',
+
+      // Currencies
+      ethOracleAddress: '0x3669da30c33D27A6A579548fCfc345fE5dEdda6e',
+      btcOracleAddress: '0xCf88A8d7fc1A687895fC8ffAad567f303926B094',
+      daiOracleAddress: '0x0000000000000000000000000000000000000000',
+      usdcOracleAddress: '0x0000000000000000000000000000000000000000',
+      usdtOracleAddress: '0x0000000000000000000000000000000000000000',
+      jpyOracleAddress: '0x0000000000000000000000000000000000000000',
+      maticOracleAddress: '0x0000000000000000000000000000000000000000',
+      dotOracleAddress: '0xA873F6b30aD79fCAF9b03A0A883d6D1f18D661d7',
+
     }
   }
 
