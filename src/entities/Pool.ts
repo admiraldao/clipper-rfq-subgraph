@@ -1,14 +1,15 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { DailyPoolStatus, HourlyPoolStatus, Pool } from '../../types/schema'
-import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO, DIRECT_EXCHANGE_ADDRESS, ONE_DAY, ONE_HOUR } from '../constants'
+import { clipperDirectExchangeAddress } from '../addresses'
+import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO, ONE_DAY, ONE_HOUR } from '../constants'
 import { getPoolTokenSupply } from '../utils/pool'
 import { getOpenTime } from '../utils/timeHelpers'
 
 export function loadPool(): Pool {
-  let pool = Pool.load(DIRECT_EXCHANGE_ADDRESS)
+  let pool = Pool.load(clipperDirectExchangeAddress.toString())
 
   if (!pool) {
-    pool = new Pool(DIRECT_EXCHANGE_ADDRESS)
+    pool = new Pool(clipperDirectExchangeAddress.toString())
     pool.avgTrade = BIG_DECIMAL_ZERO
     pool.volumeUSD = BIG_DECIMAL_ZERO
     pool.txCount = BIG_INT_ZERO
@@ -44,7 +45,7 @@ function updateDailyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: Big
   let from = openTime
   let to = openTime.plus(ONE_DAY).minus(BIG_INT_ONE)
 
-  let id = DIRECT_EXCHANGE_ADDRESS.concat('-')
+  let id = clipperDirectExchangeAddress.toString().concat('-')
     .concat(from.toString())
     .concat(to.toString())
 
@@ -77,7 +78,7 @@ function updateHourlyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: Bi
   let from = openTime
   let to = openTime.plus(ONE_HOUR).minus(BIG_INT_ONE)
 
-  let id = DIRECT_EXCHANGE_ADDRESS.concat('-')
+  let id = clipperDirectExchangeAddress.toString().concat('-')
     .concat(from.toString())
     .concat(to.toString())
 

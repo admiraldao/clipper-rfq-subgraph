@@ -1,12 +1,11 @@
 import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import {
-  ClipperDirectExchange,
   Deposited,
   Swapped,
   Withdrawn,
 } from '../types/ClipperDirectExchange/ClipperDirectExchange'
 import { Deposit, Swap, Withdrawal } from '../types/schema'
-import { BIG_INT_ONE, DIRECT_EXCHANGE_ADDRESS } from './constants'
+import { BIG_INT_ONE } from './constants'
 import { updatePair } from './entities/Pair'
 import { loadPool, updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
@@ -14,6 +13,7 @@ import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils
 import { getCurrentPoolLiquidity, getPoolTokenSupply } from './utils/pool'
 import { getUsdPrice } from './utils/prices'
 import { fetchTokenBalance } from './utils/token'
+import { clipperDirectExchangeAddress } from './addresses'
 
 export function handleDeposited(event: Deposited): void {
   let pool = loadPool()
@@ -29,7 +29,7 @@ export function handleDeposited(event: Deposited): void {
 
   let newDeposit = new Deposit(txHash)
   newDeposit.timestamp = timestamp
-  newDeposit.pool = DIRECT_EXCHANGE_ADDRESS
+  newDeposit.pool = clipperDirectExchangeAddress.toString()
   newDeposit.poolTokens = receivedPoolTokens
   newDeposit.amountUsd = usdProportion
   newDeposit.depositor = event.params.depositor
@@ -57,7 +57,7 @@ export function handleWithdrawn(event: Withdrawn): void {
   newWithdrawal.timestamp = timestamp
   newWithdrawal.amountUsd = usdProportion
   newWithdrawal.poolTokens = burntPoolTokens
-  newWithdrawal.pool = DIRECT_EXCHANGE_ADDRESS
+  newWithdrawal.pool = clipperDirectExchangeAddress.toString()
   newWithdrawal.withdrawer = event.params.withdrawer
 
   pool.poolTokensSupply = poolTokenSupply
@@ -69,7 +69,7 @@ export function handleWithdrawn(event: Withdrawn): void {
 export function handleSwapped(event: Swapped): void {
   let inAsset = loadToken(event.params.inAsset)
   let outAsset = loadToken(event.params.outAsset)
-  let poolAddress = Address.fromString(DIRECT_EXCHANGE_ADDRESS)
+  let poolAddress = clipperDirectExchangeAddress
 
   let amountIn = convertTokenToDecimal(event.params.inAmount, inAsset.decimals)
   let amountOut = convertTokenToDecimal(event.params.outAmount, outAsset.decimals)
@@ -100,7 +100,7 @@ export function handleSwapped(event: Swapped): void {
   swap.pricePerOutputToken = outputPrice
   swap.amountInUSD = amountInUsd
   swap.amountOutUSD = amountOutUsd
-  swap.pool = DIRECT_EXCHANGE_ADDRESS
+  swap.pool = clipperDirectExchangeAddress.toString()
 
   // update assets values
 

@@ -1,7 +1,7 @@
 import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { convertTokenToDecimal } from '.'
-import { PriceOracleAddresses } from '../constants'
 import { AggregatorV3Interface } from '../../types/ClipperDirectExchange/AggregatorV3Interface'
+import { PriceOracleAddresses } from '../addresses'
 
 export function getUsdPrice(tokenSymbol: string): BigDecimal {
   let oracleAddress = Address.fromString(PriceOracleAddresses.get(tokenSymbol).toString())

@@ -2,23 +2,29 @@
   "name": "clipper-polygon",
   "license": "UNLICENSED",
   "scripts": {
-    "codegen": "graph codegen --output-dir ./types",
+    "script": "ts-node scripts",
     "build": "graph build",
-    "deploy:polygon": "graph deploy --node https://api.thegraph.com/deploy/ edoapp/clipper-polygon --debug",
-    "create-local": "graph create --node http://localhost:8020/ edoapp/clipper-polygon",
-    "remove-local": "graph remove --node http://localhost:8020/ edoapp/clipper-polygon",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 edoapp/clipper-polygon"
+    "pre:codegen:polygon": "rimraf types && yarn script template --deployment matic",
+    "codegen:polygon": "graph codegen --output-dir ./types",
+    "deploy:polygon": "graph deploy --node https://api.thegraph.com/deploy/ edoapp/clipper-polygon --debug"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.21.0",
     "@graphprotocol/graph-ts": "0.20.0"
   },
   "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/yargs": "^17.0.8",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "eslint": "^6.2.2",
     "eslint-config-prettier": "^6.1.0",
+    "glob": "^7.2.0",
+    "handlebars": "^4.7.7",
     "prettier": "^1.18.2",
-    "typescript": "^3.5.2"
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.4.0",
+    "typescript": "^3.5.2",
+    "yargs": "^17.3.1"
   }
 }
