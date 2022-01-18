@@ -29,7 +29,7 @@ export function handleDeposited(event: Deposited): void {
 
   let newDeposit = new Deposit(txHash)
   newDeposit.timestamp = timestamp
-  newDeposit.pool = clipperDirectExchangeAddress.toString()
+  newDeposit.pool = clipperDirectExchangeAddress.toHexString()
   newDeposit.poolTokens = receivedPoolTokens
   newDeposit.amountUsd = usdProportion
   newDeposit.depositor = event.params.depositor
@@ -57,7 +57,7 @@ export function handleWithdrawn(event: Withdrawn): void {
   newWithdrawal.timestamp = timestamp
   newWithdrawal.amountUsd = usdProportion
   newWithdrawal.poolTokens = burntPoolTokens
-  newWithdrawal.pool = clipperDirectExchangeAddress.toString()
+  newWithdrawal.pool = clipperDirectExchangeAddress.toHexString()
   newWithdrawal.withdrawer = event.params.withdrawer
 
   pool.poolTokensSupply = poolTokenSupply
@@ -100,7 +100,7 @@ export function handleSwapped(event: Swapped): void {
   swap.pricePerOutputToken = outputPrice
   swap.amountInUSD = amountInUsd
   swap.amountOutUSD = amountOutUsd
-  swap.pool = clipperDirectExchangeAddress.toString()
+  swap.pool = clipperDirectExchangeAddress.toHexString()
 
   // update assets values
 

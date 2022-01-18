@@ -5,9 +5,10 @@ import { PriceOracleAddresses } from '../addresses'
 import { ADDRESS_ZERO } from '../constants'
 
 export function getUsdPrice(tokenSymbol: string): BigDecimal {
-  let oracleAddressString = PriceOracleAddresses.get(tokenSymbol)
-
-  if (!oracleAddressString || oracleAddressString === ADDRESS_ZERO ) return BigDecimal.fromString('1')
+  let oracleAddressString = PriceOracleAddresses.get(tokenSymbol).toString()
+  let oracleValueExist = PriceOracleAddresses.isSet(tokenSymbol)
+  
+  if (!oracleValueExist || oracleAddressString === ADDRESS_ZERO ) return BigDecimal.fromString('1')
 
   let oracleAddress = Address.fromString(oracleAddressString)
   let oracleContract = AggregatorV3Interface.bind(oracleAddress)

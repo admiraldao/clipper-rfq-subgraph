@@ -6,10 +6,10 @@ import { getPoolTokenSupply } from '../utils/pool'
 import { getOpenTime } from '../utils/timeHelpers'
 
 export function loadPool(): Pool {
-  let pool = Pool.load(clipperDirectExchangeAddress.toString())
+  let pool = Pool.load(clipperDirectExchangeAddress.toHex())
 
   if (!pool) {
-    pool = new Pool(clipperDirectExchangeAddress.toString())
+    pool = new Pool(clipperDirectExchangeAddress.toHex())
     pool.avgTrade = BIG_DECIMAL_ZERO
     pool.volumeUSD = BIG_DECIMAL_ZERO
     pool.txCount = BIG_INT_ZERO
@@ -45,7 +45,7 @@ function updateDailyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: Big
   let from = openTime
   let to = openTime.plus(ONE_DAY).minus(BIG_INT_ONE)
 
-  let id = clipperDirectExchangeAddress.toString().concat('-')
+  let id = clipperDirectExchangeAddress.toHexString().concat('-')
     .concat(from.toString())
     .concat(to.toString())
 
@@ -78,7 +78,7 @@ function updateHourlyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: Bi
   let from = openTime
   let to = openTime.plus(ONE_HOUR).minus(BIG_INT_ONE)
 
-  let id = clipperDirectExchangeAddress.toString().concat('-')
+  let id = clipperDirectExchangeAddress.toHexString().concat('-')
     .concat(from.toString())
     .concat(to.toString())
 
