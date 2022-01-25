@@ -86,7 +86,7 @@ export function handleSwapped(event: Swapped): void {
   let inTokenBalanceUsd = inputPrice.times(inTokenBalance)
   let outTokenBalanceUsd = outputPrice.times(outTokenBalance)
 
-  let swap = new Swap(event.transaction.hash.toHex())
+  let swap = new Swap(event.transaction.hash.toHex().concat('-').concat(event.logIndex.toString()))
   swap.transaction = event.transaction.hash
   swap.timestamp = event.block.timestamp
   swap.inToken = inAsset.id

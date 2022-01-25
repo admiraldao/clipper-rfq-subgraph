@@ -70,7 +70,7 @@ type Token @entity {
 }
 
 type Swap @entity {
-  # transaction hash + "#" + index in swaps Transaction array
+  # transaction hash + "-" + event log index
   id: ID!
   # pointer to the pool
   pool: Pool!
