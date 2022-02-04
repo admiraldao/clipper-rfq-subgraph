@@ -19,6 +19,7 @@ interface Deployment {
   jpyOracleAddress: string
   maticOracleAddress: string
   dotOracleAddress: string
+  linkOracleAddress: string
 }
 
 async function fetchDeployment(source: string): Promise<Deployment> {
@@ -38,7 +39,8 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       usdtOracleAddress: '0x0A6513e40db6EB1b165753AD52E80663aeA50545',
       jpyOracleAddress: '0xD647a6fC9BC6402301583C91decC5989d8Bc382D',
       maticOracleAddress: '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0',
-      dotOracleAddress: '0x0000000000000000000000000000000000000000'
+      dotOracleAddress: '0x0000000000000000000000000000000000000000',
+      linkOracleAddress: '0x0000000000000000000000000000000000000000'
     }
   }
 
@@ -59,7 +61,29 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       jpyOracleAddress: '0x0000000000000000000000000000000000000000',
       maticOracleAddress: '0x0000000000000000000000000000000000000000',
       dotOracleAddress: '0xA873F6b30aD79fCAF9b03A0A883d6D1f18D661d7',
+      linkOracleAddress: '0x0000000000000000000000000000000000000000'
 
+    }
+  }
+
+  if (source === 'optimism') {
+    return {
+      networkName: 'optimism',
+      startBlock: 3183055,
+
+      // Core
+      clipperDirectExchange: '0xDBD4ffC32b34f630DD8aC18D37162eC8462db7dB',
+
+      // Currencies
+      ethOracleAddress: '0x13e3Ee699D1909E989722E753853AE30b17e08c5',
+      btcOracleAddress: '0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593',
+      daiOracleAddress: '0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6',
+      usdcOracleAddress: '0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3',
+      usdtOracleAddress: '0xECef79E109e997bCA29c1c0897ec9d7b03647F5E',
+      jpyOracleAddress: '0x0000000000000000000000000000000000000000',
+      maticOracleAddress: '0x0000000000000000000000000000000000000000',
+      dotOracleAddress: '0x0000000000000000000000000000000000000000',
+      linkOracleAddress: '0xCc232dcFAAE6354cE191Bd574108c1aD03f86450'
     }
   }
 

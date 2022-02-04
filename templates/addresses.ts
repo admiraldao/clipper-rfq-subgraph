@@ -14,3 +14,4 @@ PriceOracleAddresses.set('GYEN', '{{jpyOracleAddress}}') // JPY / USD chainlink 
 PriceOracleAddresses.set('MATIC', '{{maticOracleAddress}}') // MATIC / USD chainlink oracle
 PriceOracleAddresses.set('WMATIC', '{{maticOracleAddress}}') // MATIC / USD chainlink oracle
 PriceOracleAddresses.set('DOT', '{{dotOracleAddress}}') // DOT / USD chainlink oracle
+PriceOracleAddresses.set('LINK', '{{linkOracleAddress}}') // LINk / USD chainlink oracle
