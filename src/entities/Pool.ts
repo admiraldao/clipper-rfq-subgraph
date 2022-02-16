@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, dataSource } from '@graphprotocol/graph-ts'
 import { DailyPoolStatus, HourlyPoolStatus, Pool } from '../../types/schema'
 import { clipperDirectExchangeAddress } from '../addresses'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO, ONE_DAY, ONE_HOUR } from '../constants'
@@ -10,16 +10,113 @@ export function loadPool(): Pool {
 
   if (!pool) {
     pool = new Pool(clipperDirectExchangeAddress.toHex())
+
+    // swaps
     pool.avgTrade = BIG_DECIMAL_ZERO
     pool.volumeUSD = BIG_DECIMAL_ZERO
     pool.txCount = BIG_INT_ZERO
-    pool.uniqueUsers = BIG_INT_ZERO
+
+    //deposits
+    pool.avgDeposit = BIG_DECIMAL_ZERO
+    pool.depositedUSD = BIG_DECIMAL_ZERO
+    pool.depositCount = BIG_INT_ZERO
+
+    // withdrawals
+    pool.avgWithdraw = BIG_DECIMAL_ZERO
+    pool.withdrewUSD = BIG_DECIMAL_ZERO
+    pool.withdrawalCount = BIG_INT_ZERO
+
     pool.poolTokensSupply = BIG_INT_ZERO
+    pool.uniqueUsers = BIG_INT_ZERO
 
     pool.save()
   }
 
   return pool as Pool
+}
+
+// TODO: refactor creating and updating to same function across different intervals (day, hour, etc ...)
+export function getDailyPoolStatus(pool: Pool, timestamp: BigInt): DailyPoolStatus {
+  let openTime = getOpenTime(timestamp, ONE_DAY)
+  let from = openTime
+  let to = openTime.plus(ONE_DAY).minus(BIG_INT_ONE)
+
+  let id = clipperDirectExchangeAddress
+    .toHexString()
+    .concat('-')
+    .concat(from.toString())
+    .concat(to.toString())
+
+  let dailyPoolStatus = DailyPoolStatus.load(id) as DailyPoolStatus
+
+  if (!dailyPoolStatus) {
+    dailyPoolStatus = new DailyPoolStatus(id)
+
+    // swaps
+    dailyPoolStatus.avgTrade = BIG_DECIMAL_ZERO
+    dailyPoolStatus.volumeUSD = BIG_DECIMAL_ZERO
+    dailyPoolStatus.txCount = BIG_INT_ZERO
+
+    //deposits
+    dailyPoolStatus.avgDeposit = BIG_DECIMAL_ZERO
+    dailyPoolStatus.depositedUSD = BIG_DECIMAL_ZERO
+    dailyPoolStatus.depositCount = BIG_INT_ZERO
+
+    // withdrawals
+    dailyPoolStatus.avgWithdraw = BIG_DECIMAL_ZERO
+    dailyPoolStatus.withdrewUSD = BIG_DECIMAL_ZERO
+    dailyPoolStatus.withdrawalCount = BIG_INT_ZERO
+
+    dailyPoolStatus.pool = pool.id
+    dailyPoolStatus.from = from
+    dailyPoolStatus.to = to
+    dailyPoolStatus.poolTokensSupply = BIG_INT_ZERO
+
+    dailyPoolStatus.save()
+  }
+
+  return dailyPoolStatus
+}
+
+export function getHourlyPoolStatus(pool: Pool, timestamp: BigInt): HourlyPoolStatus {
+  let openTime = getOpenTime(timestamp, ONE_HOUR)
+  let from = openTime
+  let to = openTime.plus(ONE_HOUR).minus(BIG_INT_ONE)
+
+  let id = clipperDirectExchangeAddress
+    .toHexString()
+    .concat('-')
+    .concat(from.toString())
+    .concat(to.toString())
+
+  let hourlyPoolStatus = HourlyPoolStatus.load(id) as HourlyPoolStatus
+
+  if (!hourlyPoolStatus) {
+    hourlyPoolStatus = new HourlyPoolStatus(id)
+
+    // swaps
+    hourlyPoolStatus.avgTrade = BIG_DECIMAL_ZERO
+    hourlyPoolStatus.volumeUSD = BIG_DECIMAL_ZERO
+    hourlyPoolStatus.txCount = BIG_INT_ZERO
+
+    //deposits
+    hourlyPoolStatus.avgDeposit = BIG_DECIMAL_ZERO
+    hourlyPoolStatus.depositedUSD = BIG_DECIMAL_ZERO
+    hourlyPoolStatus.depositCount = BIG_INT_ZERO
+
+    // withdrawals
+    hourlyPoolStatus.avgWithdraw = BIG_DECIMAL_ZERO
+    hourlyPoolStatus.withdrewUSD = BIG_DECIMAL_ZERO
+    hourlyPoolStatus.withdrawalCount = BIG_INT_ZERO
+
+    hourlyPoolStatus.pool = pool.id
+    hourlyPoolStatus.from = from
+    hourlyPoolStatus.to = to
+
+    hourlyPoolStatus.save()
+  }
+
+  return hourlyPoolStatus
 }
 
 export function updatePoolStatus(timestamp: BigInt, addedTxVolume: BigDecimal, addNewUser: boolean): Pool {
@@ -41,27 +138,8 @@ export function updatePoolStatus(timestamp: BigInt, addedTxVolume: BigDecimal, a
 }
 
 function updateDailyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: BigDecimal): DailyPoolStatus {
-  let openTime = getOpenTime(timestamp, ONE_DAY)
-  let from = openTime
-  let to = openTime.plus(ONE_DAY).minus(BIG_INT_ONE)
-
-  let id = clipperDirectExchangeAddress.toHexString().concat('-')
-    .concat(from.toString())
-    .concat(to.toString())
-
-  let dailyPoolStatus = DailyPoolStatus.load(id) as DailyPoolStatus
+  let dailyPoolStatus = getDailyPoolStatus(pool, timestamp)
   let poolTokensSupply = getPoolTokenSupply(pool.id)
-
-  // TODO: refactor creating and updating to same function across different intervals (day, hour, etc ...)
-  if (!dailyPoolStatus) {
-    dailyPoolStatus = new DailyPoolStatus(id)
-    dailyPoolStatus.avgTrade = BIG_DECIMAL_ZERO
-    dailyPoolStatus.volumeUSD = BIG_DECIMAL_ZERO
-    dailyPoolStatus.txCount = BIG_INT_ZERO
-    dailyPoolStatus.pool = pool.id
-    dailyPoolStatus.from = from
-    dailyPoolStatus.to = to
-  }
 
   dailyPoolStatus.txCount = dailyPoolStatus.txCount.plus(BIG_INT_ONE)
   dailyPoolStatus.volumeUSD = dailyPoolStatus.volumeUSD.plus(addedTxVolume)
@@ -74,26 +152,7 @@ function updateDailyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: Big
 }
 
 function updateHourlyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: BigDecimal): HourlyPoolStatus {
-  let openTime = getOpenTime(timestamp, ONE_HOUR)
-  let from = openTime
-  let to = openTime.plus(ONE_HOUR).minus(BIG_INT_ONE)
-
-  let id = clipperDirectExchangeAddress.toHexString().concat('-')
-    .concat(from.toString())
-    .concat(to.toString())
-
-  let hourlyPoolStatus = HourlyPoolStatus.load(id) as HourlyPoolStatus
-
-  // TODO: refactor creating and updating to same function across different intervals (day, hour, etc ...)
-  if (!hourlyPoolStatus) {
-    hourlyPoolStatus = new HourlyPoolStatus(id)
-    hourlyPoolStatus.avgTrade = BIG_DECIMAL_ZERO
-    hourlyPoolStatus.volumeUSD = BIG_DECIMAL_ZERO
-    hourlyPoolStatus.txCount = BIG_INT_ZERO
-    hourlyPoolStatus.pool = pool.id
-    hourlyPoolStatus.from = from
-    hourlyPoolStatus.to = to
-  }
+  let hourlyPoolStatus = getHourlyPoolStatus(pool, timestamp)
 
   hourlyPoolStatus.txCount = hourlyPoolStatus.txCount.plus(BIG_INT_ONE)
   hourlyPoolStatus.volumeUSD = hourlyPoolStatus.volumeUSD.plus(addedTxVolume)
