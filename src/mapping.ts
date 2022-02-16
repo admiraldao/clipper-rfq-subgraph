@@ -1,13 +1,9 @@
 import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import {
-  Deposited,
-  Swapped,
-  Withdrawn,
-} from '../types/ClipperDirectExchange/ClipperDirectExchange'
+import { Deposited, Swapped, Withdrawn } from '../types/ClipperDirectExchange/ClipperDirectExchange'
 import { Deposit, Swap, Withdrawal } from '../types/schema'
 import { BIG_INT_ONE } from './constants'
 import { updatePair } from './entities/Pair'
-import { loadPool, updatePoolStatus } from './entities/Pool'
+import { getDailyPoolStatus, getHourlyPoolStatus, loadPool, updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
 import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils'
 import { getCurrentPoolLiquidity, getPoolTokenSupply } from './utils/pool'
@@ -35,8 +31,25 @@ export function handleDeposited(event: Deposited): void {
   newDeposit.depositor = event.params.depositor
 
   pool.poolTokensSupply = poolTokenSupply
+  pool.depositCount = pool.depositCount.plus(BIG_INT_ONE)
+  pool.depositedUSD = pool.depositedUSD.plus(usdProportion)
+  pool.avgDeposit = pool.depositedUSD.div(pool.depositCount.toBigDecimal())
+
+  // UPDATE DAILY DEPOSIT VALUE
+  let dailyPoolStatus = getDailyPoolStatus(pool, timestamp)
+  dailyPoolStatus.depositCount = dailyPoolStatus.depositCount.plus(BIG_INT_ONE)
+  dailyPoolStatus.depositedUSD = dailyPoolStatus.depositedUSD.plus(usdProportion)
+  dailyPoolStatus.avgDeposit = dailyPoolStatus.depositedUSD.div(dailyPoolStatus.depositCount.toBigDecimal())
+
+  // UPDATE HOURLY DEPOSIT VALUE
+  let hourlyPoolStatus = getHourlyPoolStatus(pool, timestamp)
+  hourlyPoolStatus.depositCount = hourlyPoolStatus.depositCount.plus(BIG_INT_ONE)
+  hourlyPoolStatus.depositedUSD = hourlyPoolStatus.depositedUSD.plus(usdProportion)
+  hourlyPoolStatus.avgDeposit = hourlyPoolStatus.depositedUSD.div(hourlyPoolStatus.depositCount.toBigDecimal())
 
   newDeposit.save()
+  hourlyPoolStatus.save()
+  dailyPoolStatus.save()
   pool.save()
 }
 
@@ -61,8 +74,25 @@ export function handleWithdrawn(event: Withdrawn): void {
   newWithdrawal.withdrawer = event.params.withdrawer
 
   pool.poolTokensSupply = poolTokenSupply
+  pool.withdrawalCount = pool.withdrawalCount.plus(BIG_INT_ONE)
+  pool.withdrewUSD = pool.withdrewUSD.plus(usdProportion)
+  pool.avgDeposit = pool.withdrewUSD.div(pool.withdrawalCount.toBigDecimal())
+
+  // UPDATE DAILY WITHDRAWAL VALUE
+  let dailyPoolStatus = getDailyPoolStatus(pool, timestamp)
+  dailyPoolStatus.withdrawalCount = dailyPoolStatus.withdrawalCount.plus(BIG_INT_ONE)
+  dailyPoolStatus.withdrewUSD = dailyPoolStatus.withdrewUSD.plus(usdProportion)
+  dailyPoolStatus.avgWithdraw = dailyPoolStatus.withdrewUSD.div(dailyPoolStatus.withdrawalCount.toBigDecimal())
+
+  // UPDATE HOURLY WITHDRAWAL VALUE
+  let hourlyPoolStatus = getHourlyPoolStatus(pool, timestamp)
+  hourlyPoolStatus.withdrawalCount = hourlyPoolStatus.withdrawalCount.plus(BIG_INT_ONE)
+  hourlyPoolStatus.withdrewUSD = hourlyPoolStatus.withdrewUSD.plus(usdProportion)
+  hourlyPoolStatus.avgWithdraw = hourlyPoolStatus.withdrewUSD.div(hourlyPoolStatus.withdrawalCount.toBigDecimal())
 
   newWithdrawal.save()
+  dailyPoolStatus.save()
+  hourlyPoolStatus.save()
   pool.save()
 }
 
@@ -86,7 +116,12 @@ export function handleSwapped(event: Swapped): void {
   let inTokenBalanceUsd = inputPrice.times(inTokenBalance)
   let outTokenBalanceUsd = outputPrice.times(outTokenBalance)
 
-  let swap = new Swap(event.transaction.hash.toHex().concat('-').concat(event.logIndex.toString()))
+  let swap = new Swap(
+    event.transaction.hash
+      .toHex()
+      .concat('-')
+      .concat(event.logIndex.toString()),
+  )
   swap.transaction = event.transaction.hash
   swap.timestamp = event.block.timestamp
   swap.inToken = inAsset.id

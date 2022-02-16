@@ -69,6 +69,60 @@ export class Pool extends Entity {
     this.set("txCount", Value.fromBigInt(value));
   }
 
+  get depositCount(): BigInt {
+    let value = this.get("depositCount");
+    return value.toBigInt();
+  }
+
+  set depositCount(value: BigInt) {
+    this.set("depositCount", Value.fromBigInt(value));
+  }
+
+  get avgDeposit(): BigDecimal {
+    let value = this.get("avgDeposit");
+    return value.toBigDecimal();
+  }
+
+  set avgDeposit(value: BigDecimal) {
+    this.set("avgDeposit", Value.fromBigDecimal(value));
+  }
+
+  get depositedUSD(): BigDecimal {
+    let value = this.get("depositedUSD");
+    return value.toBigDecimal();
+  }
+
+  set depositedUSD(value: BigDecimal) {
+    this.set("depositedUSD", Value.fromBigDecimal(value));
+  }
+
+  get withdrawalCount(): BigInt {
+    let value = this.get("withdrawalCount");
+    return value.toBigInt();
+  }
+
+  set withdrawalCount(value: BigInt) {
+    this.set("withdrawalCount", Value.fromBigInt(value));
+  }
+
+  get avgWithdraw(): BigDecimal {
+    let value = this.get("avgWithdraw");
+    return value.toBigDecimal();
+  }
+
+  set avgWithdraw(value: BigDecimal) {
+    this.set("avgWithdraw", Value.fromBigDecimal(value));
+  }
+
+  get withdrewUSD(): BigDecimal {
+    let value = this.get("withdrewUSD");
+    return value.toBigDecimal();
+  }
+
+  set withdrewUSD(value: BigDecimal) {
+    this.set("withdrewUSD", Value.fromBigDecimal(value));
+  }
+
   get uniqueUsers(): BigInt {
     let value = this.get("uniqueUsers");
     return value.toBigInt();
@@ -163,6 +217,15 @@ export class DailyPoolStatus extends Entity {
     this.set("pool", Value.fromString(value));
   }
 
+  get poolTokensSupply(): BigInt {
+    let value = this.get("poolTokensSupply");
+    return value.toBigInt();
+  }
+
+  set poolTokensSupply(value: BigInt) {
+    this.set("poolTokensSupply", Value.fromBigInt(value));
+  }
+
   get txCount(): BigInt {
     let value = this.get("txCount");
     return value.toBigInt();
@@ -190,13 +253,58 @@ export class DailyPoolStatus extends Entity {
     this.set("avgTrade", Value.fromBigDecimal(value));
   }
 
-  get poolTokensSupply(): BigInt {
-    let value = this.get("poolTokensSupply");
+  get depositCount(): BigInt {
+    let value = this.get("depositCount");
     return value.toBigInt();
   }
 
-  set poolTokensSupply(value: BigInt) {
-    this.set("poolTokensSupply", Value.fromBigInt(value));
+  set depositCount(value: BigInt) {
+    this.set("depositCount", Value.fromBigInt(value));
+  }
+
+  get depositedUSD(): BigDecimal {
+    let value = this.get("depositedUSD");
+    return value.toBigDecimal();
+  }
+
+  set depositedUSD(value: BigDecimal) {
+    this.set("depositedUSD", Value.fromBigDecimal(value));
+  }
+
+  get avgDeposit(): BigDecimal {
+    let value = this.get("avgDeposit");
+    return value.toBigDecimal();
+  }
+
+  set avgDeposit(value: BigDecimal) {
+    this.set("avgDeposit", Value.fromBigDecimal(value));
+  }
+
+  get withdrawalCount(): BigInt {
+    let value = this.get("withdrawalCount");
+    return value.toBigInt();
+  }
+
+  set withdrawalCount(value: BigInt) {
+    this.set("withdrawalCount", Value.fromBigInt(value));
+  }
+
+  get withdrewUSD(): BigDecimal {
+    let value = this.get("withdrewUSD");
+    return value.toBigDecimal();
+  }
+
+  set withdrewUSD(value: BigDecimal) {
+    this.set("withdrewUSD", Value.fromBigDecimal(value));
+  }
+
+  get avgWithdraw(): BigDecimal {
+    let value = this.get("avgWithdraw");
+    return value.toBigDecimal();
+  }
+
+  set avgWithdraw(value: BigDecimal) {
+    this.set("avgWithdraw", Value.fromBigDecimal(value));
   }
 }
 
@@ -282,6 +390,60 @@ export class HourlyPoolStatus extends Entity {
 
   set avgTrade(value: BigDecimal) {
     this.set("avgTrade", Value.fromBigDecimal(value));
+  }
+
+  get depositCount(): BigInt {
+    let value = this.get("depositCount");
+    return value.toBigInt();
+  }
+
+  set depositCount(value: BigInt) {
+    this.set("depositCount", Value.fromBigInt(value));
+  }
+
+  get depositedUSD(): BigDecimal {
+    let value = this.get("depositedUSD");
+    return value.toBigDecimal();
+  }
+
+  set depositedUSD(value: BigDecimal) {
+    this.set("depositedUSD", Value.fromBigDecimal(value));
+  }
+
+  get avgDeposit(): BigDecimal {
+    let value = this.get("avgDeposit");
+    return value.toBigDecimal();
+  }
+
+  set avgDeposit(value: BigDecimal) {
+    this.set("avgDeposit", Value.fromBigDecimal(value));
+  }
+
+  get withdrawalCount(): BigInt {
+    let value = this.get("withdrawalCount");
+    return value.toBigInt();
+  }
+
+  set withdrawalCount(value: BigInt) {
+    this.set("withdrawalCount", Value.fromBigInt(value));
+  }
+
+  get withdrewUSD(): BigDecimal {
+    let value = this.get("withdrewUSD");
+    return value.toBigDecimal();
+  }
+
+  set withdrewUSD(value: BigDecimal) {
+    this.set("withdrewUSD", Value.fromBigDecimal(value));
+  }
+
+  get avgWithdraw(): BigDecimal {
+    let value = this.get("avgWithdraw");
+    return value.toBigDecimal();
+  }
+
+  set avgWithdraw(value: BigDecimal) {
+    this.set("avgWithdraw", Value.fromBigDecimal(value));
   }
 }
 

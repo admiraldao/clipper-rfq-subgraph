@@ -7,6 +7,21 @@ type Pool @entity {
   avgTrade: BigDecimal!
   # all time number of transactions
   txCount: BigInt!
+
+  # all time deposits count
+  depositCount: BigInt!
+  # Average deposit amount of all time in USD
+  avgDeposit: BigDecimal!
+  # all time deposited amount in USD
+  depositedUSD: BigDecimal!
+
+  # all time withdrawals count
+  withdrawalCount: BigInt!
+  # Average withdrawal amount of all time in USD
+  avgWithdraw: BigDecimal!
+  # all time withdrew amount in USD
+  withdrewUSD: BigDecimal!
+
   # number of all time unique users
   uniqueUsers: BigInt!
   # number of pool tokens supplied by the smart contract (used for time-travel queries)
@@ -21,14 +36,29 @@ type DailyPoolStatus @entity {
   from: BigInt!
   to: BigInt!
   pool: Pool!
+  # snapshot of number of pool tokens supplied by the smart contract
+  poolTokensSupply: BigInt!
+
   # number of transactions during period
   txCount: BigInt!
   # volume in USD
   volumeUSD: BigDecimal!
   # Average trade amount of all time in USD
   avgTrade: BigDecimal!
-  # snapshot of number of pool tokens supplied by the smart contract
-  poolTokensSupply: BigInt!
+
+  # number of deposits during daily period
+  depositCount: BigInt!
+  # deposited amount during daily period
+  depositedUSD: BigDecimal!
+  # Average deposited amount of USD during daily period
+  avgDeposit: BigDecimal!
+
+  # number of withdrawals during daily period
+  withdrawalCount: BigInt!
+  # withdrew amount during daily period
+  withdrewUSD: BigDecimal!
+  # Average withdrawal amount of USD during daily period
+  avgWithdraw: BigDecimal!
 }
 
 type HourlyPoolStatus @entity {
@@ -36,12 +66,27 @@ type HourlyPoolStatus @entity {
   from: BigInt!
   to: BigInt!
   pool: Pool!
-  # number of transactions during period
+
+  # number of transactions during daily period
   txCount: BigInt!
   # volume in USD
   volumeUSD: BigDecimal!
-  # Average trade amount of all time in USD
+  # Average trade amount of USD during hourly period
   avgTrade: BigDecimal!
+
+  # number of deposits during hourly period
+  depositCount: BigInt!
+  # deposited amount during hourly period
+  depositedUSD: BigDecimal!
+  # Average deposited amount of USD during hourly period
+  avgDeposit: BigDecimal!
+
+  # number of withdrawals during hourly period
+  withdrawalCount: BigInt!
+  # withdrew amount during hourly period
+  withdrewUSD: BigDecimal!
+  # Average withdrawal amount of USD during hourly period
+  avgWithdraw: BigDecimal!
 }
 
 type Token @entity {
