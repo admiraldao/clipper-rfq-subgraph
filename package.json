@@ -7,10 +7,12 @@
     "pre:codegen:polygon": "rimraf types && yarn script template --deployment matic",
     "pre:codegen:moonbase": "rimraf types && yarn script template --deployment moonbase",
     "pre:codegen:optimism": "rimraf types && yarn script template --deployment optimism",
+    "pre:codegen:moonbeam": "rimraf types && yarn script template --deployment moonbeam",
     "codegen": "graph codegen --output-dir ./types",
     "deploy:polygon": "graph deploy --node https://api.thegraph.com/deploy/ edoapp/clipper-polygon --debug",
     "deploy:moonbase": "graph deploy --node https://api.thegraph.com/deploy/ edoapp/clipper-moonbase-alpha --debug",
-    "deploy:optimism": "graph deploy --node https://api.thegraph.com/deploy/ edoapp/clipper-optimism --debug"
+    "deploy:optimism": "graph deploy --node https://api.thegraph.com/deploy/ edoapp/clipper-optimism --debug",
+    "deploy:moonbeam": "graph deploy --node https://api.thegraph.com/deploy/ edoapp/clipper-moonbeam --debug"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.21.0",

@@ -1,5 +1,4 @@
 import fs from 'fs'
-import glob from 'glob'
 import handlebars from 'handlebars'
 import path from 'path'
 import yargs from 'yargs'
@@ -20,9 +19,39 @@ interface Deployment {
   maticOracleAddress: string
   dotOracleAddress: string
   linkOracleAddress: string
+
+  fallbackPrices?: {
+    WETH: number
+    MOVR: number
+    DAI: number
+    USDC: number
+    USDT: number
+    WBTC: number
+    GLMR: number
+    MATIC: number
+    DOT: number
+    LINK: number
+    GYEN: number
+  }
 }
 
 async function fetchDeployment(source: string): Promise<Deployment> {
+  const commonConfig = {
+    // as of 19/03/2022 at 00:20 AM ET.
+    fallbackPrices: {
+      WETH: 2948.37,
+      MOVR: 53.88,
+      DAI: 1,
+      USDC: 1,
+      USDT: 1,
+      WBTC: 41741.74,
+      GLMR: 2.45,
+      MATIC: 1.52,
+      DOT: 19.03,
+      LINK: 14.91,
+      GYEN: 0.008391,
+    },
+  }
   if (source === 'matic') {
     return {
       networkName: 'matic',
@@ -40,7 +69,8 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       jpyOracleAddress: '0xD647a6fC9BC6402301583C91decC5989d8Bc382D',
       maticOracleAddress: '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0',
       dotOracleAddress: '0x0000000000000000000000000000000000000000',
-      linkOracleAddress: '0x0000000000000000000000000000000000000000'
+      linkOracleAddress: '0x0000000000000000000000000000000000000000',
+      ...commonConfig,
     }
   }
 
@@ -61,8 +91,8 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       jpyOracleAddress: '0x0000000000000000000000000000000000000000',
       maticOracleAddress: '0x0000000000000000000000000000000000000000',
       dotOracleAddress: '0xA873F6b30aD79fCAF9b03A0A883d6D1f18D661d7',
-      linkOracleAddress: '0x0000000000000000000000000000000000000000'
-
+      linkOracleAddress: '0x0000000000000000000000000000000000000000',
+      ...commonConfig,
     }
   }
 
@@ -83,7 +113,30 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       jpyOracleAddress: '0x0000000000000000000000000000000000000000',
       maticOracleAddress: '0x0000000000000000000000000000000000000000',
       dotOracleAddress: '0x0000000000000000000000000000000000000000',
-      linkOracleAddress: '0xCc232dcFAAE6354cE191Bd574108c1aD03f86450'
+      linkOracleAddress: '0xCc232dcFAAE6354cE191Bd574108c1aD03f86450',
+      ...commonConfig,
+    }
+  }
+
+  if (source === 'moonbeam') {
+    return {
+      networkName: 'moonbeam',
+      startBlock: 576698,
+
+      // Core
+      clipperDirectExchange: '0xe90d415Af331237Ae18a882EC21870f1965BE933',
+
+      // Currencies
+      ethOracleAddress: '0x13e3Ee699D1909E989722E753853AE30b17e08c5',
+      btcOracleAddress: '0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593',
+      daiOracleAddress: '0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6',
+      usdcOracleAddress: '0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3',
+      usdtOracleAddress: '0xECef79E109e997bCA29c1c0897ec9d7b03647F5E',
+      jpyOracleAddress: '0x0000000000000000000000000000000000000000',
+      maticOracleAddress: '0x0000000000000000000000000000000000000000',
+      dotOracleAddress: '0x0000000000000000000000000000000000000000',
+      linkOracleAddress: '0xCc232dcFAAE6354cE191Bd574108c1aD03f86450',
+      ...commonConfig,
     }
   }
 
