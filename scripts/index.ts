@@ -121,21 +121,21 @@ async function fetchDeployment(source: string): Promise<Deployment> {
   if (source === 'moonbeam') {
     return {
       networkName: 'moonbeam',
-      startBlock: 576698,
+      startBlock: 576821,
 
       // Core
       clipperDirectExchange: '0xe90d415Af331237Ae18a882EC21870f1965BE933',
 
       // Currencies
-      ethOracleAddress: '0x13e3Ee699D1909E989722E753853AE30b17e08c5',
-      btcOracleAddress: '0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593',
-      daiOracleAddress: '0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6',
-      usdcOracleAddress: '0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3',
-      usdtOracleAddress: '0xECef79E109e997bCA29c1c0897ec9d7b03647F5E',
+      ethOracleAddress: '0x0000000000000000000000000000000000000000',
+      btcOracleAddress: '0x0000000000000000000000000000000000000000',
+      daiOracleAddress: '0x0000000000000000000000000000000000000000',
+      usdcOracleAddress: '0x0000000000000000000000000000000000000000',
+      usdtOracleAddress: '0x0000000000000000000000000000000000000000',
       jpyOracleAddress: '0x0000000000000000000000000000000000000000',
       maticOracleAddress: '0x0000000000000000000000000000000000000000',
       dotOracleAddress: '0x0000000000000000000000000000000000000000',
-      linkOracleAddress: '0xCc232dcFAAE6354cE191Bd574108c1aD03f86450',
+      linkOracleAddress: '0x0000000000000000000000000000000000000000',
       ...commonConfig,
     }
   }
