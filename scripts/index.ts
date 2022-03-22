@@ -45,7 +45,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       USDC: 1,
       USDT: 1,
       WBTC: 41741.74,
-      GLMR: 2.45,
+      GLMR: 2.74,
       MATIC: 1.52,
       DOT: 19.03,
       LINK: 14.91,
@@ -121,7 +121,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
   if (source === 'moonbeam') {
     return {
       networkName: 'moonbeam',
-      startBlock: 576821,
+      startBlock: 576698,
 
       // Core
       clipperDirectExchange: '0xe90d415Af331237Ae18a882EC21870f1965BE933',
