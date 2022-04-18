@@ -52,6 +52,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       GYEN: 0.008391,
     },
   }
+
   if (source === 'matic') {
     return {
       networkName: 'matic',
@@ -132,6 +133,28 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       daiOracleAddress: '0x0000000000000000000000000000000000000000',
       usdcOracleAddress: '0x0000000000000000000000000000000000000000',
       usdtOracleAddress: '0x0000000000000000000000000000000000000000',
+      jpyOracleAddress: '0x0000000000000000000000000000000000000000',
+      maticOracleAddress: '0x0000000000000000000000000000000000000000',
+      dotOracleAddress: '0x0000000000000000000000000000000000000000',
+      linkOracleAddress: '0x0000000000000000000000000000000000000000',
+      ...commonConfig,
+    }
+  }
+
+  if (source === 'ethereum') {
+    return {
+      networkName: 'mainnet',
+      startBlock: 14461923,
+
+      // Core
+      clipperDirectExchange: '0xcc12532e95c2a6a4c53af153b9b739a3cc9218a7',
+
+      // currency oracles
+      ethOracleAddress: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
+      btcOracleAddress: '0xf4030086522a5beea4988f8ca5b36dbc97bee88c',
+      daiOracleAddress: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
+      usdcOracleAddress: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6',
+      usdtOracleAddress: '0x3E7d1eAB13ad0104d2750B8863b489D65364e32D',
       jpyOracleAddress: '0x0000000000000000000000000000000000000000',
       maticOracleAddress: '0x0000000000000000000000000000000000000000',
       dotOracleAddress: '0x0000000000000000000000000000000000000000',
