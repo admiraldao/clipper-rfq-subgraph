@@ -1,5 +1,5 @@
 import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import { Deposited, Swapped, Withdrawn } from '../types/ClipperDirectExchange/ClipperDirectExchange'
+import { AssetWithdrawn, Deposited, Swapped, Withdrawn } from '../types/ClipperDirectExchange/ClipperDirectExchange'
 import { Deposit, Swap, Withdrawal } from '../types/schema'
 import { BIG_INT_ONE } from './constants'
 import { updatePair } from './entities/Pair'
@@ -53,15 +53,13 @@ export function handleDeposited(event: Deposited): void {
   pool.save()
 }
 
-export function handleWithdrawn(event: Withdrawn): void {
+function handleWithdrawnEvents(poolTokens: BigInt, withdrawer: Address, timestamp: BigInt, txHash: string): void {
   let pool = loadPool()
-  let timestamp = event.block.timestamp
-  let txHash = event.transaction.hash.toHexString()
   let currentPoolLiquidity = getCurrentPoolLiquidity(pool.id)
   let poolTokenSupply = getPoolTokenSupply(pool.id)
 
   let totalPoolTokens = convertTokenToDecimal(poolTokenSupply, BigInt.fromI32(18))
-  let burntPoolTokens = convertTokenToDecimal(event.params.poolTokens, BigInt.fromI32(18))
+  let burntPoolTokens = convertTokenToDecimal(poolTokens, BigInt.fromI32(18))
 
   let burntProportion = burntPoolTokens.div(totalPoolTokens.plus(burntPoolTokens))
   let usdProportion = currentPoolLiquidity.times(burntProportion)
@@ -71,7 +69,7 @@ export function handleWithdrawn(event: Withdrawn): void {
   newWithdrawal.amountUsd = usdProportion
   newWithdrawal.poolTokens = burntPoolTokens
   newWithdrawal.pool = clipperDirectExchangeAddress.toHexString()
-  newWithdrawal.withdrawer = event.params.withdrawer
+  newWithdrawal.withdrawer = withdrawer
 
   pool.poolTokensSupply = poolTokenSupply
   pool.withdrawalCount = pool.withdrawalCount.plus(BIG_INT_ONE)
@@ -94,6 +92,14 @@ export function handleWithdrawn(event: Withdrawn): void {
   dailyPoolStatus.save()
   hourlyPoolStatus.save()
   pool.save()
+}
+
+export function handleWithdrawn(event: Withdrawn): void {
+  handleWithdrawnEvents(event.params.poolTokens, event.params.withdrawer, event.block.timestamp, event.transaction.hash.toHexString())
+}
+
+export function handleSingleAssetWithdrawn(event: AssetWithdrawn): void {
+  handleWithdrawnEvents(event.params.poolTokens, event.params.withdrawer, event.block.timestamp, event.transaction.hash.toHexString())
 }
 
 export function handleSwapped(event: Swapped): void {
