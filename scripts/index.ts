@@ -56,10 +56,10 @@ async function fetchDeployment(source: string): Promise<Deployment> {
   if (source === 'matic') {
     return {
       networkName: 'matic',
-      startBlock: 21032348,
+      startBlock: 27340300,
 
       // Core
-      clipperDirectExchange: '0xD01e3549160c62Acabc4D0EB89F67aAFA3de8EEd',
+      clipperDirectExchange: '0x6Bfce69d1Df30FD2B2C8e478EDEC9dAa643Ae3B8',
 
       // Currencies
       ethOracleAddress: '0xF9680D99D6C9589e2a93a78A04A279e509205945',
@@ -122,10 +122,10 @@ async function fetchDeployment(source: string): Promise<Deployment> {
   if (source === 'moonbeam') {
     return {
       networkName: 'moonbeam',
-      startBlock: 576698,
+      startBlock: 855590,
 
       // Core
-      clipperDirectExchange: '0xe90d415Af331237Ae18a882EC21870f1965BE933',
+      clipperDirectExchange: '0xCE37051a3e60587157DC4c0391B4C555c6E68255',
 
       // Currencies
       ethOracleAddress: '0x0000000000000000000000000000000000000000',
