@@ -3,6 +3,11 @@ enum TokenType {
   LONGTAIL
 }
 
+enum SwapType {
+  COVE,
+  POOL,
+}
+
 type Pool @entity {
   # pool address
   id: ID!
@@ -160,6 +165,7 @@ type Swap @entity(immutable: true) {
 
   # pair traded (not required for cove swaps)
   pair: Pair
+  swapType: SwapType
 }
 
 type Pair @entity {
@@ -212,6 +218,15 @@ type Deposit @entity(immutable: true) {
   # The equivalent usd value of received pool tokens at the moment of tx
   amountUsd: BigDecimal!
   # sender of the transaction
+  depositor: Bytes!
+}
+
+type CoveDeposit @entity(immutable: true) {
+  id: ID!
+  timestamp: BigInt!
+  cove: Cove!
+  poolTokens: BigDecimal!
+  amountUsd: BigDecimal!
   depositor: Bytes!
 }
 
