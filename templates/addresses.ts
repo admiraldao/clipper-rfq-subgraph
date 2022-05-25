@@ -31,6 +31,11 @@ FallbackAssetPrice.set('WMATIC', '{{fallbackPrices.MATIC}}')
 FallbackAssetPrice.set('DOT', '{{fallbackPrices.DOT}}')
 FallbackAssetPrice.set('LINK', '{{fallbackPrices.LINK}}')
 
+export let AddressZeroSymbol = '{{addressZeroMap.symbol}}'
+export let AddressZeroAddress = '{{addressZeroMap.address}}'
+export let AddressZeroDecimals = '{{addressZeroMap.decimals}}'
+export let AddressZeroName = '{{addressZeroMap.name}}'
+
 export let ShorttailAssets = new TypedMap<Address, string>()
 // mainnet
 ShorttailAssets.set(Address.fromString('0x0000000000000000000000000000000000000802'), 'GLMR')
@@ -64,3 +69,9 @@ ShorttailAssets.set(Address.fromString('0x30d2a9f5fdf90ace8c17952cbb4ee48a55d916
 ShorttailAssets.set(Address.fromString('0x1dc78acda13a8bc4408b207c9e48cdbc096d95e0'), 'WBTC')
 ShorttailAssets.set(Address.fromString('0xc234a67a4f840e61ade794be47de455361b52413'), 'DAI')
 ShorttailAssets.set(Address.fromString('0x1d4c2a246311bb9f827f4c768e277ff5787b7d7e'), 'MOVR')
+
+// ClipperLP
+ShorttailAssets.set(Address.fromString('0xce37051a3e60587157dc4c0391b4c555c6e68255'), 'CLIPPERLP') // Moonbeam
+ShorttailAssets.set(Address.fromString('0x6bfce69d1df30fd2b2c8e478edec9daa643ae3b8'), 'CLIPPERLP') // Polygon
+ShorttailAssets.set(Address.fromString('0xdbd4ffc32b34f630dd8ac18d37162ec8462db7db'), 'CLIPPERLP') // Optimism
+ShorttailAssets.set(Address.fromString('0xcc12532e95c2a6a4c53af153b9b739a3cc9218a7'), 'CLIPPERLP') // Mainnet

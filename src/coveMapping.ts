@@ -1,8 +1,8 @@
-import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal } from '@graphprotocol/graph-ts'
 import { CoveDeposited, CoveSwapped, CoveWithdrawn } from '../types/ClipperCove/ClipperCove'
-import { Swap, Token } from '../types/schema'
-import { clipperDirectExchangeAddress } from './addresses'
-import { BIG_INT_EIGHTEEN, BIG_INT_ONE, LongTailType, ShortTailType } from './constants'
+import { Swap } from '../types/schema'
+import { AddressZeroAddress, clipperDirectExchangeAddress } from './addresses'
+import { ADDRESS_ZERO, BIG_INT_ONE, LongTailType, ShortTailType } from './constants'
 import { loadCove, loadUserCoveStake } from './entities/Cove'
 import { updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
@@ -31,8 +31,11 @@ export function handleCoveDeposited(event: CoveDeposited): void {
 }
 
 export function handleCoveSwapped(event: CoveSwapped): void {
-  let inAsset = loadToken(event.params.inAsset)
-  let outAsset = loadToken(event.params.outAsset)
+  let inAssetAddress = event.params.inAsset.toHex() == ADDRESS_ZERO ? Address.fromString(AddressZeroAddress) : event.params.inAsset
+  let outAssetAddress = event.params.outAsset.toHex() == ADDRESS_ZERO ? Address.fromString(AddressZeroAddress) : event.params.outAsset
+
+  let inAsset = loadToken(inAssetAddress)
+  let outAsset = loadToken(outAssetAddress)
 
   let inAmount = convertTokenToDecimal(event.params.inAmount, inAsset.decimals)
   let outAmount = convertTokenToDecimal(event.params.outAmount, outAsset.decimals)
@@ -47,7 +50,7 @@ export function handleCoveSwapped(event: CoveSwapped): void {
   let outCovePoolTokenAmount: BigDecimal 
 
   if (inAsset.type === LongTailType) {
-    let coveAssetPrice = getCoveAssetPrice(event.params.inAsset, inAsset.decimals.toI32())
+    let coveAssetPrice = getCoveAssetPrice(inAssetAddress, inAsset.decimals.toI32())
     inputPrice = coveAssetPrice.get('assetPrice') as BigDecimal
     inTokenBalance = coveAssetPrice.get('assetBalance') as BigDecimal
     inTokenBalanceUsd = inTokenBalance.times(inputPrice)
@@ -59,7 +62,7 @@ export function handleCoveSwapped(event: CoveSwapped): void {
   }
 
   if (outAsset.type === LongTailType) {
-    let coveAssetPrice = getCoveAssetPrice(event.params.outAsset, outAsset.decimals.toI32())
+    let coveAssetPrice = getCoveAssetPrice(outAssetAddress, outAsset.decimals.toI32())
     outputPrice = coveAssetPrice.get('assetPrice') as BigDecimal
     outTokenBalance = coveAssetPrice.get('assetBalance') as BigDecimal
     outTokenBalanceUsd = outTokenBalance.times(outputPrice)

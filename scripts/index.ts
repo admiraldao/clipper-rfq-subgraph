@@ -23,6 +23,13 @@ interface Deployment {
   dotOracleAddress: string
   linkOracleAddress: string
 
+  addressZeroMap: {
+    symbol: string
+    decimals: number
+    address: string
+    name: string
+  }
+
   fallbackPrices?: {
     WETH: number
     MOVR: number
@@ -66,6 +73,12 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       clipperDirectExchange: '0x6Bfce69d1Df30FD2B2C8e478EDEC9dAa643Ae3B8',
       clipperCove: '0x2370cB1278c948b606f789D2E5Ce0B41E90a756f',
 
+      addressZeroMap: {
+        symbol: 'MATIC',
+        decimals: 18,
+        name: 'Matic',
+        address: '0x0000000000000000000000000000000000000000',
+      },
       // Currencies
       ethOracleAddress: '0xF9680D99D6C9589e2a93a78A04A279e509205945',
       btcOracleAddress: '0xDE31F8bFBD8c84b5360CFACCa3539B938dd78ae6',
@@ -89,6 +102,13 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       // Core
       clipperDirectExchange: '0xc2dc657a3eef28f48bad9c3db27e33c4a76efd4c',
       clipperCove: '0x0000000000000000000000000000000000000000',
+
+      addressZeroMap: {
+        symbol: 'DEV',
+        decimals: 18,
+        name: 'DEV',
+        address: '0x0000000000000000000000000000000000000000',
+      },
 
       // Currencies
       ethOracleAddress: '0x3669da30c33D27A6A579548fCfc345fE5dEdda6e',
@@ -114,6 +134,13 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       clipperDirectExchange: '0xDBD4ffC32b34f630DD8aC18D37162eC8462db7dB',
       clipperCove: '0x0000000000000000000000000000000000000000',
 
+      addressZeroMap: {
+        symbol: 'ETH',
+        decimals: 18,
+        name: 'Ether',
+        address: '0x0000000000000000000000000000000000000000',
+      },
+
       // Currencies
       ethOracleAddress: '0x13e3Ee699D1909E989722E753853AE30b17e08c5',
       btcOracleAddress: '0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593',
@@ -138,6 +165,13 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       clipperDirectExchange: '0xCE37051a3e60587157DC4c0391B4C555c6E68255',
       clipperCove: '0x3309a431de850Ec554E5F22b2d9fC0B245a2023e',
 
+      addressZeroMap: {
+        symbol: 'GLMR',
+        decimals: 18,
+        name: 'GLMR token',
+        address: '0x0000000000000000000000000000000000000802',
+      },
+      
       // Currencies
       ethOracleAddress: '0x0000000000000000000000000000000000000000',
       btcOracleAddress: '0x0000000000000000000000000000000000000000',
@@ -161,6 +195,13 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       // Core
       clipperDirectExchange: '0xcc12532e95c2a6a4c53af153b9b739a3cc9218a7',
       clipperCove: '0x0000000000000000000000000000000000000000',
+
+      addressZeroMap: {
+        symbol: 'ETH',
+        decimals: 18,
+        name: 'Ether',
+        address: '0x0000000000000000000000000000000000000000',
+      },
 
       // currency oracles
       ethOracleAddress: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',

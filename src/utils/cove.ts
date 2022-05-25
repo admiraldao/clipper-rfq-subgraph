@@ -1,7 +1,6 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { convertTokenToDecimal } from ".";
 import { ClipperCove } from "../../types/ClipperCove/ClipperCove";
-import { Cove } from "../../types/schema";
 import { clipperCoveAddress } from "../addresses";
 import { BIG_INT_EIGHTEEN } from "../constants";
 

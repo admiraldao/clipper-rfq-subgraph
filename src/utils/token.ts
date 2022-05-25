@@ -2,13 +2,14 @@ import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { convertTokenToDecimal } from '.'
 import { ERC20 } from '../../types/ClipperDirectExchange/ERC20'
 import { Token } from '../../types/schema'
+import { AddressZeroName, AddressZeroSymbol } from '../addresses'
 import { ADDRESS_ZERO } from '../constants'
 
 export function fetchTokenSymbol(tokenAddress: Address): string {
   let contract = ERC20.bind(tokenAddress)
 
   if (tokenAddress.equals(Address.fromString(ADDRESS_ZERO))) {
-    return 'ETH'
+    return AddressZeroSymbol
   }
   // try types string and bytes32 for symbol
   let symbolValue = 'unknown'
@@ -37,7 +38,7 @@ export function fetchTokenDecimals(tokenAddress: Address): BigInt {
 
 export function fetchTokenName(tokenAddress: Address): string {
   if (tokenAddress.equals(Address.fromString(ADDRESS_ZERO))) {
-    return 'Matic'
+    return AddressZeroName
   }
 
   let contract = ERC20.bind(tokenAddress)
