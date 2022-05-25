@@ -57,6 +57,8 @@ dataSources:
           file: ./abis/ERC20.json
         - name: AggregatorV3Interface
           file: ./abis/AggregatorV3Interface.json
+        - name: ClipperDirectExchange
+          file: ./abis/ClipperDirectExchange.json
       eventHandlers:
         - event: CoveSwapped(indexed address,indexed address,indexed address,uint256,uint256,bytes32)
           handler: handleCoveSwapped

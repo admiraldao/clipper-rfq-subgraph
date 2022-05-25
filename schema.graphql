@@ -1,6 +1,6 @@
 enum TokenType {
   SHORTTAIL,
-  LONGTAIl
+  LONGTAIL
 }
 
 type Pool @entity {
