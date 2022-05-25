@@ -1,17 +1,20 @@
-import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt, TypedMap } from '@graphprotocol/graph-ts'
 import { convertTokenToDecimal } from '.'
 import { AggregatorV3Interface } from '../../types/ClipperDirectExchange/AggregatorV3Interface'
-import { FallbackAssetPrice, PriceOracleAddresses } from '../addresses'
-import { ADDRESS_ZERO } from '../constants'
+import { clipperDirectExchangeAddress, FallbackAssetPrice, PriceOracleAddresses } from '../addresses'
+import { ADDRESS_ZERO, BIG_INT_EIGHTEEN } from '../constants'
+import { getCoveBalances } from './cove'
+import { getCurrentPoolLiquidity, getPoolTokenSupply } from './pool'
 
 export function getUsdPrice(tokenSymbol: string): BigDecimal {
-  let oracleAddressString = PriceOracleAddresses.get(tokenSymbol).toString()
+  let priceOracleAddress = PriceOracleAddresses.get(tokenSymbol)
+  let oracleAddressString = priceOracleAddress ? priceOracleAddress.toString(): ADDRESS_ZERO
   let oracleValueExist = PriceOracleAddresses.isSet(tokenSymbol)
   let fallbackExist = FallbackAssetPrice.isSet(tokenSymbol)
 
   if ((!oracleValueExist || oracleAddressString === ADDRESS_ZERO) && fallbackExist) {
-    let fallbackPrice = FallbackAssetPrice.get(tokenSymbol).toString()
-    return BigDecimal.fromString(fallbackPrice)
+    let fallbackPrice = FallbackAssetPrice.get(tokenSymbol)
+    return BigDecimal.fromString(fallbackPrice ? fallbackPrice.toString() : '1')
   }
 
   if ((!oracleValueExist || oracleAddressString === ADDRESS_ZERO) && !fallbackExist) return BigDecimal.fromString('1')
@@ -26,3 +29,31 @@ export function getUsdPrice(tokenSymbol: string): BigDecimal {
 
   return usdValue
 }
+
+export function getCoveAssetPrice(coveAddress: Address, decimals: number): TypedMap<string, BigDecimal> {
+  let balances = getCoveBalances(coveAddress, decimals)
+  let poolTokens = balances[0]
+  let longtailAssetBalance = balances[1]
+  let poolId = clipperDirectExchangeAddress.toHexString()
+
+  // gets the USD liquidity in our current pool
+  let currentPoolLiquidity = getCurrentPoolLiquidity(poolId)
+  let poolTokenSupply = getPoolTokenSupply(poolId)
+  let totalPoolTokens = convertTokenToDecimal(poolTokenSupply, BIG_INT_EIGHTEEN)
+
+  let covePoolTokenProportion = poolTokens.div(totalPoolTokens)
+  let usdProportion = currentPoolLiquidity.times(covePoolTokenProportion)
+
+  // multiply by two since the amount of longtail assets should be approx the same, in usd value as the pool tokens added
+  let coveLiquidity = usdProportion.times(BigDecimal.fromString('2'))
+  let assetPrice = usdProportion.div(longtailAssetBalance)
+
+  let returnValue = new TypedMap<string, BigDecimal>()
+  returnValue.set('coveLiquidity', coveLiquidity)
+  returnValue.set('assetPrice', assetPrice)
+  returnValue.set('assetBalance', longtailAssetBalance)
+  returnValue.set('poolTokenBalance', poolTokens)
+
+  return returnValue
+}
+
