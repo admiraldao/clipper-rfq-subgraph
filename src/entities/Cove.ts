@@ -3,7 +3,7 @@ import { Cove, UserCoveStake } from "../../types/schema"
 import { BIG_DECIMAL_ZERO, BIG_INT_ZERO } from "../constants"
 import { loadToken } from "../utils"
 
-export function loadCove(tokenAddress: Address, opener: Bytes, timestamp: BigInt, transaction: Bytes): Cove {
+export function loadCove(tokenAddress: Address, creator: Bytes, timestamp: BigInt, transaction: Bytes): Cove {
   let id = tokenAddress.toHexString()
   let cove = Cove.load(id)
 
@@ -13,13 +13,14 @@ export function loadCove(tokenAddress: Address, opener: Bytes, timestamp: BigInt
     cove = new Cove(id)
 
     cove.longtailAsset = coveAsset.id
-    cove.openedAt = timestamp
-    cove.opener = opener
+    cove.createdAt = timestamp
+    cove.creator = creator
     cove.transaction = transaction
 
     // balance state
     cove.poolTokenAmount = BIG_DECIMAL_ZERO
     cove.longtailTokenAmount = BIG_DECIMAL_ZERO
+    cove.tvlUSD = BIG_DECIMAL_ZERO
 
     // swaps
     cove.volumeUSD = BIG_DECIMAL_ZERO

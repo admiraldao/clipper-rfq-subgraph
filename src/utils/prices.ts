@@ -42,6 +42,8 @@ export function getCoveAssetPrice(coveAddress: Address, decimals: number): Typed
   let totalPoolTokens = convertTokenToDecimal(poolTokenSupply, BIG_INT_EIGHTEEN)
 
   let covePoolTokenProportion = poolTokens.div(totalPoolTokens)
+
+  // usd amount of pool tokens owned by the cove.
   let usdProportion = currentPoolLiquidity.times(covePoolTokenProportion)
 
   // multiply by two since the amount of longtail assets should be approx the same, in usd value as the pool tokens added

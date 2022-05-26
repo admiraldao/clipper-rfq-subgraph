@@ -31,6 +31,7 @@ export function handleCoveDeposited(event: CoveDeposited): void {
   cove.depositCount = cove.depositCount.plus(BIG_INT_ONE)
   cove.poolTokenAmount = covePoolTokenBalance
   cove.longtailTokenAmount = assetBalance
+  cove.tvlUSD = coveLiquidity
   coveAsset.tvl = assetBalance
   coveAsset.tvlUSD = assetBalanceUsd
   coveAsset.depositedUSD = coveAsset.depositedUSD.plus(depositUsdAmount)
@@ -68,7 +69,9 @@ export function handleCoveSwapped(event: CoveSwapped): void {
   let inTokenBalanceUsd: BigDecimal
   let outTokenBalanceUsd: BigDecimal
   let inCovePoolTokenAmount: BigDecimal 
-  let outCovePoolTokenAmount: BigDecimal 
+  let outCovePoolTokenAmount: BigDecimal
+  let inCoveLiquidity: BigDecimal
+  let outCoveLiquidity: BigDecimal
 
   if (inAsset.type == LongTailType) {
     let coveAssetPrice = getCoveAssetPrice(inAssetAddress, inAsset.decimals.toI32())
@@ -76,6 +79,7 @@ export function handleCoveSwapped(event: CoveSwapped): void {
     inTokenBalance = coveAssetPrice.get('assetBalance') as BigDecimal
     inTokenBalanceUsd = inTokenBalance.times(inputPrice)
     inCovePoolTokenAmount = coveAssetPrice.get('poolTokenBalance') as BigDecimal
+    inCoveLiquidity = coveAssetPrice.get('coveLiquidity') as BigDecimal
   } else {
     inputPrice = getUsdPrice(inAsset.symbol)
     inTokenBalance = fetchTokenBalance(inAsset, clipperDirectExchangeAddress)
@@ -88,6 +92,7 @@ export function handleCoveSwapped(event: CoveSwapped): void {
     outTokenBalance = coveAssetPrice.get('assetBalance') as BigDecimal
     outTokenBalanceUsd = outTokenBalance.times(outputPrice)
     outCovePoolTokenAmount = coveAssetPrice.get('poolTokenBalance') as BigDecimal
+    outCoveLiquidity = coveAssetPrice.get('coveLiquidity') as BigDecimal
   } else {
     outputPrice = getUsdPrice(outAsset.symbol)
     outTokenBalance = fetchTokenBalance(outAsset, clipperDirectExchangeAddress)
@@ -153,6 +158,9 @@ export function handleCoveSwapped(event: CoveSwapped): void {
     cove.poolTokenAmount = inCovePoolTokenAmount
     cove.longtailTokenAmount = inTokenBalance
     cove.volumeUSD = cove.volumeUSD.plus(transactionVolume)
+    if (inCoveLiquidity) {
+      cove.tvlUSD = inCoveLiquidity
+    }
 
     cove.save()
   }
@@ -163,6 +171,9 @@ export function handleCoveSwapped(event: CoveSwapped): void {
     cove.poolTokenAmount = outCovePoolTokenAmount
     cove.longtailTokenAmount = outTokenBalance
     cove.volumeUSD = cove.volumeUSD.plus(transactionVolume)
+    if (outCoveLiquidity) {
+      cove.tvlUSD = outCoveLiquidity
+    }
 
     cove.save()
 

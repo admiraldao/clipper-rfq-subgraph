@@ -257,10 +257,13 @@ type Cove @entity {
   poolTokenAmount: BigDecimal!
   longtailTokenAmount: BigDecimal!
 
+  # poolTokenAmount times the price of pool token times two
+  tvlUSD: BigDecimal!
+
   # wallet address that opened the cove.
-  opener: Bytes!
+  creator: Bytes!
   # timestamp to when the cove was opened
-  openedAt: BigInt!
+  createdAt: BigInt!
   # transaction that initialized the cove.
   transaction: Bytes!
 
