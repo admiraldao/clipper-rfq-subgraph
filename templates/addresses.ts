@@ -52,7 +52,6 @@ ShorttailAssets.set(Address.fromString('0xc2132d05d31c914a87c6611c10748aeb04b58e
 ShorttailAssets.set(Address.fromString('0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'), 'DAI')
 ShorttailAssets.set(Address.fromString('0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6'), 'WBTC')
 ShorttailAssets.set(Address.fromString('0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'), 'WMATIC')
-ShorttailAssets.set(Address.fromString('0x482bc619ee7662759cdc0685b4e78f464da39c73'), 'GYEN')
 
 // optimism
 ShorttailAssets.set(Address.fromString('0x4200000000000000000000000000000000000006'), 'WETH')
