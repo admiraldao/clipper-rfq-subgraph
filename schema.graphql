@@ -279,5 +279,6 @@ type UserCoveStake @entity {
   id: ID!
   cove: Cove!
   user: Bytes!
+  depositTokens: BigInt!
   active: Boolean!
 }

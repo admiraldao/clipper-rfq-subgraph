@@ -46,6 +46,7 @@ export function loadUserCoveStake(coveId: string, userWallet: Address): UserCove
     stake = new UserCoveStake(id)
     stake.user = userWallet
     stake.cove = coveId
+    stake.depositTokens = BIG_INT_ZERO
     stake.active = true
 
     stake.save()

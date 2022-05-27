@@ -2,7 +2,7 @@ import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { CoveDeposited, CoveSwapped, CoveWithdrawn } from '../types/ClipperCove/ClipperCove'
 import { CoveDeposit, Swap } from '../types/schema'
 import { AddressZeroAddress, clipperDirectExchangeAddress } from './addresses'
-import { ADDRESS_ZERO, BIG_INT_ONE, LongTailType, ShortTailType } from './constants'
+import { ADDRESS_ZERO, BIG_INT_ONE, BIG_INT_ZERO, LongTailType, ShortTailType } from './constants'
 import { loadCove, loadUserCoveStake } from './entities/Cove'
 import { updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
@@ -37,6 +37,7 @@ export function handleCoveDeposited(event: CoveDeposited): void {
   coveAsset.depositedUSD = coveAsset.depositedUSD.plus(depositUsdAmount)
 
   userCoveStake.active = true
+  userCoveStake.depositTokens = userCoveStake.depositTokens.plus(event.params.poolTokens)
 
   let newDeposit = new CoveDeposit(event.transaction.hash.toHexString())
   newDeposit.timestamp = event.block.timestamp
@@ -182,4 +183,32 @@ export function handleCoveSwapped(event: CoveSwapped): void {
   swap.save()
   txSource.save()
 }
-export function handleCoveWithdrawn(event: CoveWithdrawn): void {}
+export function handleCoveWithdrawn(event: CoveWithdrawn): void {
+  let cove = loadCove(event.params.tokenAddress, event.params.withdrawer, event.block.timestamp, event.transaction.hash)
+  let coveAsset = loadToken(event.params.tokenAddress)
+  let userCoveStake = loadUserCoveStake(cove.id, event.params.withdrawer)
+
+  let coveAssetPrice = getCoveAssetPrice(event.params.tokenAddress, coveAsset.decimals.toI32())
+  let assetBalance = coveAssetPrice.get('assetBalance') as BigDecimal
+  let covePoolTokenBalance = coveAssetPrice.get('poolTokenBalance') as BigDecimal
+  let coveLiquidity = coveAssetPrice.get('coveLiquidity') as BigDecimal
+  let inputPrice = coveAssetPrice.get('assetPrice') as BigDecimal
+  let assetBalanceUsd = assetBalance.times(inputPrice)
+
+  cove.withdrawalCount = cove.withdrawalCount.plus(BIG_INT_ONE)
+  cove.poolTokenAmount = covePoolTokenBalance
+  cove.longtailTokenAmount = assetBalance
+  cove.tvlUSD = coveLiquidity
+  coveAsset.tvl = assetBalance
+  coveAsset.tvlUSD = assetBalanceUsd
+
+  
+  userCoveStake.depositTokens = userCoveStake.depositTokens.minus(event.params.poolTokens)
+  if (userCoveStake.depositTokens.minus(event.params.poolTokens).le(BIG_INT_ZERO)) {
+    userCoveStake.active = false
+  }
+
+  cove.save()
+  userCoveStake.save()
+  coveAsset.save()
+}
