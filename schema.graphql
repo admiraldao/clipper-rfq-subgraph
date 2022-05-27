@@ -225,7 +225,6 @@ type CoveDeposit @entity(immutable: true) {
   id: ID!
   timestamp: BigInt!
   cove: Cove!
-  poolTokens: BigDecimal!
   amountUsd: BigDecimal!
   depositor: Bytes!
 }

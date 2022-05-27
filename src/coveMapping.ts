@@ -2,48 +2,59 @@ import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { CoveDeposited, CoveSwapped, CoveWithdrawn } from '../types/ClipperCove/ClipperCove'
 import { CoveDeposit, Swap } from '../types/schema'
 import { AddressZeroAddress, clipperDirectExchangeAddress } from './addresses'
-import { ADDRESS_ZERO, BIG_INT_ONE, BIG_INT_ZERO, LongTailType, ShortTailType } from './constants'
+import { ADDRESS_ZERO, BIG_INT_EIGHTEEN, BIG_INT_ONE, BIG_INT_ZERO, LongTailType, ShortTailType } from './constants'
 import { loadCove, loadUserCoveStake } from './entities/Cove'
 import { updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
 import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils'
+import { getCoveBalances, getCoveInternalDepositSupply } from './utils/cove'
+import { getCurrentPoolLiquidity, getPoolTokenSupply } from './utils/pool'
 import { getCoveAssetPrice, getUsdPrice } from './utils/prices'
 import { fetchTokenBalance } from './utils/token'
 
 export function handleCoveDeposited(event: CoveDeposited): void {
-  let cove = loadCove(event.params.tokenAddress, event.params.depositor, event.block.timestamp, event.transaction.hash)
+  let coveAddress = event.params.tokenAddress
+  let cove = loadCove(coveAddress, event.params.depositor, event.block.timestamp, event.transaction.hash)
   let coveAsset = loadToken(event.params.tokenAddress)
-  let coveAssetPrice = getCoveAssetPrice(event.params.tokenAddress, coveAsset.decimals.toI32())
-  let covePoolTokenBalance = coveAssetPrice.get('poolTokenBalance') as BigDecimal
-  let depositedPoolTokens = convertTokenToDecimal(event.params.poolTokens, BigInt.fromI32(18))
-  let inputPrice = coveAssetPrice.get('assetPrice') as BigDecimal
-  let assetBalance = coveAssetPrice.get('assetBalance') as BigDecimal
-  // gets the amount from pool token balance multiplying by pool liquidty multiplied by 2
-  let coveLiquidity = coveAssetPrice.get('coveLiquidity') as BigDecimal
-  let assetBalanceUsd = assetBalance.times(inputPrice)
   let userCoveStake = loadUserCoveStake(cove.id, event.params.depositor)
+  
+  // internal deposit token for cove info
+  let internalDepositTokens = event.params.poolTokens
+  let internalTotalDepositTokens = getCoveInternalDepositSupply(coveAddress)
 
-  // usd amount of total ClipperLP token value in Cove.
-  let coveUsdProportion = coveLiquidity.div(BigDecimal.fromString('2'))
-  let pricePerLp = coveUsdProportion.div(covePoolTokenBalance)
-  let depositUsdAmount = pricePerLp.times(depositedPoolTokens)
+  // general cove info
+  let coveBalances = getCoveBalances(coveAddress, coveAsset.decimals.toI32())
+  let covePoolTokens = coveBalances[0]
+
+  // general pool info
+  let poolLiquidity = getCurrentPoolLiquidity(clipperDirectExchangeAddress.toHexString())
+  let poolTokens = getPoolTokenSupply(clipperDirectExchangeAddress.toHexString())
+
+  let depositOwnedFraction = internalDepositTokens.div(internalTotalDepositTokens)
+  let covePoolFraction = covePoolTokens.div(convertTokenToDecimal(poolTokens, BIG_INT_EIGHTEEN))
+
+  let poolTokensCoveLiquidity = poolLiquidity.times(covePoolFraction)
+  // multiply by two because the cove liquidity should be twice as the amount of pool tokens
+  let coveLiquidity = poolTokensCoveLiquidity.times(BigDecimal.fromString('2'))
+  let estimatedUsdDepositValue = coveLiquidity.times(depositOwnedFraction.toBigDecimal())
+
+  let longTailTokens = coveBalances[1]
 
   cove.depositCount = cove.depositCount.plus(BIG_INT_ONE)
-  cove.poolTokenAmount = covePoolTokenBalance
-  cove.longtailTokenAmount = assetBalance
+  cove.poolTokenAmount = covePoolTokens
+  cove.longtailTokenAmount = longTailTokens
   cove.tvlUSD = coveLiquidity
-  coveAsset.tvl = assetBalance
-  coveAsset.tvlUSD = assetBalanceUsd
-  coveAsset.depositedUSD = coveAsset.depositedUSD.plus(depositUsdAmount)
+  coveAsset.tvl = longTailTokens
+  coveAsset.tvlUSD = poolTokensCoveLiquidity
+  coveAsset.depositedUSD = coveAsset.depositedUSD.plus(estimatedUsdDepositValue)
 
   userCoveStake.active = true
-  userCoveStake.depositTokens = userCoveStake.depositTokens.plus(event.params.poolTokens)
+  userCoveStake.depositTokens = userCoveStake.depositTokens.plus(internalDepositTokens)
 
   let newDeposit = new CoveDeposit(event.transaction.hash.toHexString())
   newDeposit.timestamp = event.block.timestamp
   newDeposit.cove = cove.id
-  newDeposit.poolTokens = depositedPoolTokens
-  newDeposit.amountUsd = depositUsdAmount
+  newDeposit.amountUsd = estimatedUsdDepositValue
   newDeposit.depositor = event.params.depositor
 
   newDeposit.save()

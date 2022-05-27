@@ -18,4 +18,11 @@ export function getCoveBalances(coveAddress: Address, decimals: number): Array<B
   return [poolTokens, assetBalance]
 }
 
+export function getCoveInternalDepositSupply(coveAddress: Address): BigInt {
+  let coveContract = ClipperCove.bind(clipperCoveAddress)
+  let totalDepositSupply = coveContract.totalDepositTokenSupply(coveAddress)
+  
+  return totalDepositSupply
+}
+
 // export function get
