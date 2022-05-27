@@ -3,7 +3,7 @@ import { convertTokenToDecimal } from '.'
 import { ERC20 } from '../../types/ClipperDirectExchange/ERC20'
 import { Token } from '../../types/schema'
 import { AddressZeroName, AddressZeroSymbol } from '../addresses'
-import { ADDRESS_ZERO } from '../constants'
+import { ADDRESS_ZERO, BIG_INT_ONE } from '../constants'
 
 export function fetchTokenSymbol(tokenAddress: Address): string {
   let contract = ERC20.bind(tokenAddress)
@@ -57,7 +57,12 @@ export function fetchTokenName(tokenAddress: Address): string {
 export function fetchTokenBalance(token: Token, wallet: Address): BigDecimal {
   let tokenContract = ERC20.bind(Address.fromString(token.id))
 
-  let tokenBigBalance = tokenContract.balanceOf(wallet)
+  let tokenBigBalanceResult = tokenContract.try_balanceOf(wallet)
+
+  let tokenBigBalance = BIG_INT_ONE
+  if (!tokenBigBalanceResult.reverted) {
+    tokenBigBalance = tokenBigBalanceResult.value
+  }
   let tokenBalance = convertTokenToDecimal(tokenBigBalance, token.decimals)
 
   return tokenBalance

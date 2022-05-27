@@ -2,7 +2,7 @@ import { Address, BigDecimal, BigInt, TypedMap } from '@graphprotocol/graph-ts'
 import { convertTokenToDecimal } from '.'
 import { AggregatorV3Interface } from '../../types/ClipperDirectExchange/AggregatorV3Interface'
 import { clipperDirectExchangeAddress, FallbackAssetPrice, PriceOracleAddresses } from '../addresses'
-import { ADDRESS_ZERO, BIG_INT_EIGHTEEN } from '../constants'
+import { ADDRESS_ZERO, BIG_DECIMAL_ZERO, BIG_INT_EIGHTEEN } from '../constants'
 import { getCoveBalances } from './cove'
 import { getCurrentPoolLiquidity, getPoolTokenSupply } from './pool'
 
@@ -48,7 +48,7 @@ export function getCoveAssetPrice(coveAddress: Address, decimals: number): Typed
 
   // multiply by two since the amount of longtail assets should be approx the same, in usd value as the pool tokens added
   let coveLiquidity = usdProportion.times(BigDecimal.fromString('2'))
-  let assetPrice = usdProportion.div(longtailAssetBalance)
+  let assetPrice = longtailAssetBalance.le(BIG_DECIMAL_ZERO) ? BIG_DECIMAL_ZERO : usdProportion.div(longtailAssetBalance)
 
   let returnValue = new TypedMap<string, BigDecimal>()
   returnValue.set('coveLiquidity', coveLiquidity)
