@@ -1,7 +1,7 @@
-import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import { Swapped } from '../../types/ClipperDirectExchange/ClipperDirectExchange'
-import { Token, TransactionSource } from '../../types/schema'
-import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO } from '../constants'
+import { Address, BigDecimal, BigInt, Bytes } from '@graphprotocol/graph-ts'
+import {  Token, TransactionSource } from '../../types/schema'
+import { ShorttailAssets } from '../addresses'
+import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO, LongTailType, ShortTailType } from '../constants'
 import { fetchTokenDecimals, fetchTokenName, fetchTokenSymbol } from './token'
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
@@ -19,8 +19,8 @@ export function convertTokenToDecimal(tokenAmount: BigInt, exchangeDecimals: Big
   return tokenAmount.toBigDecimal().div(exponentToBigDecimal(exchangeDecimals))
 }
 
-export function loadTransactionSource(event: Swapped): TransactionSource {
-  let txSourceId = event.params.auxiliaryData.toString() || 'Unknown'
+export function loadTransactionSource(auxData: Bytes): TransactionSource {
+  let txSourceId = auxData.toString() || 'Unknown'
 
   let txSource = TransactionSource.load(txSourceId)
   if (!txSource) {
@@ -37,6 +37,7 @@ export function loadToken(tokenAddress: Address): Token {
   let token = Token.load(tokenAddress.toHex())
 
   if (!token) {
+    let isShorttail = ShorttailAssets.isSet(tokenAddress)
     token = new Token(tokenAddress.toHex())
     let symbol = fetchTokenSymbol(tokenAddress)
     token.symbol = symbol
@@ -49,6 +50,12 @@ export function loadToken(tokenAddress: Address): Token {
     token.tvlUSD = BIG_DECIMAL_ZERO
     token.deposited = BIG_DECIMAL_ZERO
     token.depositedUSD = BIG_DECIMAL_ZERO
+    if (isShorttail) {
+      token.type = ShortTailType
+    } else {
+      token.type = LongTailType
+      token.cove = tokenAddress.toHexString()
+    }
 
     token.save()
   }

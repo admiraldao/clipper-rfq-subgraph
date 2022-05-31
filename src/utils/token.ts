@@ -2,13 +2,14 @@ import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { convertTokenToDecimal } from '.'
 import { ERC20 } from '../../types/ClipperDirectExchange/ERC20'
 import { Token } from '../../types/schema'
-import { ADDRESS_ZERO } from '../constants'
+import { AddressZeroName, AddressZeroSymbol } from '../addresses'
+import { ADDRESS_ZERO, BIG_INT_ONE } from '../constants'
 
 export function fetchTokenSymbol(tokenAddress: Address): string {
   let contract = ERC20.bind(tokenAddress)
 
   if (tokenAddress.equals(Address.fromString(ADDRESS_ZERO))) {
-    return 'ETH'
+    return AddressZeroSymbol
   }
   // try types string and bytes32 for symbol
   let symbolValue = 'unknown'
@@ -37,7 +38,7 @@ export function fetchTokenDecimals(tokenAddress: Address): BigInt {
 
 export function fetchTokenName(tokenAddress: Address): string {
   if (tokenAddress.equals(Address.fromString(ADDRESS_ZERO))) {
-    return 'Matic'
+    return AddressZeroName
   }
 
   let contract = ERC20.bind(tokenAddress)
@@ -56,7 +57,12 @@ export function fetchTokenName(tokenAddress: Address): string {
 export function fetchTokenBalance(token: Token, wallet: Address): BigDecimal {
   let tokenContract = ERC20.bind(Address.fromString(token.id))
 
-  let tokenBigBalance = tokenContract.balanceOf(wallet)
+  let tokenBigBalanceResult = tokenContract.try_balanceOf(wallet)
+
+  let tokenBigBalance = BIG_INT_ONE
+  if (!tokenBigBalanceResult.reverted) {
+    tokenBigBalance = tokenBigBalanceResult.value
+  }
   let tokenBalance = convertTokenToDecimal(tokenBigBalance, token.decimals)
 
   return tokenBalance

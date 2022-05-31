@@ -142,6 +142,7 @@ export function handleSwapped(event: Swapped): void {
   swap.amountInUSD = amountInUsd
   swap.amountOutUSD = amountOutUsd
   swap.pool = clipperDirectExchangeAddress.toHexString()
+  swap.swapType = 'POOL'
 
   // update assets values
 
@@ -169,7 +170,7 @@ export function handleSwapped(event: Swapped): void {
     inAsset.save()
   }
 
-  let txSource = loadTransactionSource(event)
+  let txSource = loadTransactionSource(event.params.auxiliaryData)
   swap.transactionSource = txSource.id
   txSource.txCount = txSource.txCount.plus(BIG_INT_ONE)
 

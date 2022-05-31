@@ -35,3 +35,35 @@ dataSources:
         - event: Swapped(indexed address,indexed address,indexed address,uint256,uint256,bytes)
           handler: handleSwapped
       file: ./src/mapping.ts
+  - name: ClipperCove
+    kind: ethereum/contract
+    network: {{networkName}}
+    source: 
+      address: '{{clipperCove}}'
+      abi: ClipperCove
+      startBlock: {{coveStartBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - CoveSwapped
+        - CoveDeposited
+        - CoveWithdrawn
+      abis:
+        - name: ClipperCove
+          file: ./abis/ClipperCove.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: AggregatorV3Interface
+          file: ./abis/AggregatorV3Interface.json
+        - name: ClipperDirectExchange
+          file: ./abis/ClipperDirectExchange.json
+      eventHandlers:
+        - event: CoveSwapped(indexed address,indexed address,indexed address,uint256,uint256,bytes32)
+          handler: handleCoveSwapped
+        - event: CoveDeposited(indexed address,indexed address,uint256,uint256)
+          handler: handleCoveDeposited
+        - event: CoveWithdrawn(indexed address,indexed address,uint256,uint256)
+          handler: handleCoveWithdrawn
+      file: ./src/coveMapping.ts

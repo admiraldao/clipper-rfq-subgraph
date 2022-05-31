@@ -6,8 +6,11 @@ import yargs from 'yargs'
 interface Deployment {
   networkName: string
   startBlock: number
+  coveStartBlock: number
+
   // Core
   clipperDirectExchange: string
+  clipperCove: string
 
   // Currencies
   ethOracleAddress: string
@@ -19,6 +22,13 @@ interface Deployment {
   maticOracleAddress: string
   dotOracleAddress: string
   linkOracleAddress: string
+
+  addressZeroMap: {
+    symbol: string
+    decimals: number
+    address: string
+    name: string
+  }
 
   fallbackPrices?: {
     WETH: number
@@ -57,10 +67,18 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     return {
       networkName: 'matic',
       startBlock: 27340300,
+      coveStartBlock: 28486635,
 
       // Core
       clipperDirectExchange: '0x6Bfce69d1Df30FD2B2C8e478EDEC9dAa643Ae3B8',
+      clipperCove: '0x2370cB1278c948b606f789D2E5Ce0B41E90a756f',
 
+      addressZeroMap: {
+        symbol: 'MATIC',
+        decimals: 18,
+        name: 'Matic',
+        address: '0x0000000000000000000000000000000000000000',
+      },
       // Currencies
       ethOracleAddress: '0xF9680D99D6C9589e2a93a78A04A279e509205945',
       btcOracleAddress: '0xDE31F8bFBD8c84b5360CFACCa3539B938dd78ae6',
@@ -79,9 +97,18 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     return {
       networkName: 'mbase',
       startBlock: 1518878,
+      coveStartBlock: 1518878,
 
       // Core
       clipperDirectExchange: '0xc2dc657a3eef28f48bad9c3db27e33c4a76efd4c',
+      clipperCove: '0x0000000000000000000000000000000000000000',
+
+      addressZeroMap: {
+        symbol: 'DEV',
+        decimals: 18,
+        name: 'DEV',
+        address: '0x0000000000000000000000000000000000000000',
+      },
 
       // Currencies
       ethOracleAddress: '0x3669da30c33D27A6A579548fCfc345fE5dEdda6e',
@@ -101,9 +128,18 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     return {
       networkName: 'optimism',
       startBlock: 3183055,
+      coveStartBlock: 3183055,
 
       // Core
       clipperDirectExchange: '0xDBD4ffC32b34f630DD8aC18D37162eC8462db7dB',
+      clipperCove: '0x0000000000000000000000000000000000000000',
+
+      addressZeroMap: {
+        symbol: 'ETH',
+        decimals: 18,
+        name: 'Ether',
+        address: '0x0000000000000000000000000000000000000000',
+      },
 
       // Currencies
       ethOracleAddress: '0x13e3Ee699D1909E989722E753853AE30b17e08c5',
@@ -123,10 +159,19 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     return {
       networkName: 'moonbeam',
       startBlock: 855590,
+      coveStartBlock: 1054979,
 
       // Core
       clipperDirectExchange: '0xCE37051a3e60587157DC4c0391B4C555c6E68255',
+      clipperCove: '0x3309a431de850Ec554E5F22b2d9fC0B245a2023e',
 
+      addressZeroMap: {
+        symbol: 'GLMR',
+        decimals: 18,
+        name: 'GLMR token',
+        address: '0x0000000000000000000000000000000000000802',
+      },
+      
       // Currencies
       ethOracleAddress: '0x0000000000000000000000000000000000000000',
       btcOracleAddress: '0x0000000000000000000000000000000000000000',
@@ -145,9 +190,18 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     return {
       networkName: 'mainnet',
       startBlock: 14461923,
+      coveStartBlock: 14461923,
 
       // Core
       clipperDirectExchange: '0xcc12532e95c2a6a4c53af153b9b739a3cc9218a7',
+      clipperCove: '0x0000000000000000000000000000000000000000',
+
+      addressZeroMap: {
+        symbol: 'ETH',
+        decimals: 18,
+        name: 'Ether',
+        address: '0x0000000000000000000000000000000000000000',
+      },
 
       // currency oracles
       ethOracleAddress: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
