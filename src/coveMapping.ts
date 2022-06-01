@@ -2,7 +2,7 @@ import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { CoveDeposited, CoveSwapped, CoveWithdrawn } from '../types/ClipperCove/ClipperCove'
 import { CoveDeposit, Swap } from '../types/schema'
 import { AddressZeroAddress, clipperDirectExchangeAddress } from './addresses'
-import { ADDRESS_ZERO, BIG_INT_EIGHTEEN, BIG_INT_ONE, BIG_INT_ZERO, LongTailType, ShortTailType } from './constants'
+import { ADDRESS_ZERO, BIG_DECIMAL_ZERO, BIG_INT_EIGHTEEN, BIG_INT_ONE, BIG_INT_ZERO, LongTailType, ShortTailType } from './constants'
 import { loadCove, loadUserCoveStake } from './entities/Cove'
 import { updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
@@ -139,6 +139,9 @@ export function handleCoveSwapped(event: CoveSwapped): void {
   swap.amountOutUSD = amountOutUsd
   swap.swapType = 'COVE'
 
+  let feeUSD = amountInUsd.minus(amountOutUsd).lt(BIG_DECIMAL_ZERO) ? BIG_DECIMAL_ZERO : amountInUsd.minus(amountOutUsd)
+  swap.feeUSD = feeUSD
+
   outAsset.txCount = outAsset.txCount.plus(BIG_INT_ONE)
   outAsset.volume = outAsset.volume.plus(outAmount)
   outAsset.volumeUSD = outAsset.volumeUSD.plus(amountOutUsd)
@@ -161,7 +164,7 @@ export function handleCoveSwapped(event: CoveSwapped): void {
   swap.sender = event.transaction.from.toHexString()
 
   if (inAsset.type == ShortTailType || outAsset.type == ShortTailType) {
-    updatePoolStatus(event.block.timestamp, transactionVolume, isUnique)
+    updatePoolStatus(event.block.timestamp, transactionVolume, isUnique, feeUSD)
   }
 
   if (inAsset.type == LongTailType) {

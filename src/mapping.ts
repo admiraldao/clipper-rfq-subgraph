@@ -1,7 +1,7 @@
 import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { AssetWithdrawn, Deposited, Swapped, Withdrawn } from '../types/ClipperDirectExchange/ClipperDirectExchange'
 import { Deposit, Swap, Withdrawal } from '../types/schema'
-import { BIG_INT_ONE } from './constants'
+import { BIG_DECIMAL_ZERO, BIG_INT_ONE } from './constants'
 import { updatePair } from './entities/Pair'
 import { getDailyPoolStatus, getHourlyPoolStatus, loadPool, updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
@@ -144,6 +144,9 @@ export function handleSwapped(event: Swapped): void {
   swap.pool = clipperDirectExchangeAddress.toHexString()
   swap.swapType = 'POOL'
 
+  let feeUSD = amountInUsd.minus(amountOutUsd).lt(BIG_DECIMAL_ZERO) ? BIG_DECIMAL_ZERO : amountInUsd.minus(amountOutUsd)
+  swap.feeUSD = feeUSD
+
   // update assets values
 
   // if both assets are the same, update just one with the subtraction of both amounts
@@ -182,7 +185,7 @@ export function handleSwapped(event: Swapped): void {
   let isUnique = upsertUser(event.transaction.from.toHexString(), event.block.timestamp, transactionVolume)
   swap.pair = workingPair.id
   swap.sender = event.transaction.from.toHexString()
-  updatePoolStatus(event.block.timestamp, transactionVolume, isUnique)
+  updatePoolStatus(event.block.timestamp, transactionVolume, isUnique, feeUSD)
 
   swap.save()
   txSource.save()

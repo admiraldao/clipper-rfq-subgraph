@@ -16,6 +16,9 @@ export function loadPool(): Pool {
     pool.volumeUSD = BIG_DECIMAL_ZERO
     pool.txCount = BIG_INT_ZERO
 
+    pool.feeUSD = BIG_DECIMAL_ZERO
+    pool.avgTradeFee = BIG_DECIMAL_ZERO
+
     //deposits
     pool.avgDeposit = BIG_DECIMAL_ZERO
     pool.depositedUSD = BIG_DECIMAL_ZERO
@@ -56,6 +59,9 @@ export function getDailyPoolStatus(pool: Pool, timestamp: BigInt): DailyPoolStat
     dailyPoolStatus.avgTrade = BIG_DECIMAL_ZERO
     dailyPoolStatus.volumeUSD = BIG_DECIMAL_ZERO
     dailyPoolStatus.txCount = BIG_INT_ZERO
+
+    dailyPoolStatus.feeUSD = BIG_DECIMAL_ZERO
+    dailyPoolStatus.avgTradeFee = BIG_DECIMAL_ZERO
 
     //deposits
     dailyPoolStatus.avgDeposit = BIG_DECIMAL_ZERO
@@ -99,6 +105,9 @@ export function getHourlyPoolStatus(pool: Pool, timestamp: BigInt): HourlyPoolSt
     hourlyPoolStatus.volumeUSD = BIG_DECIMAL_ZERO
     hourlyPoolStatus.txCount = BIG_INT_ZERO
 
+    hourlyPoolStatus.feeUSD = BIG_DECIMAL_ZERO
+    hourlyPoolStatus.avgTradeFee = BIG_DECIMAL_ZERO
+
     //deposits
     hourlyPoolStatus.avgDeposit = BIG_DECIMAL_ZERO
     hourlyPoolStatus.depositedUSD = BIG_DECIMAL_ZERO
@@ -119,25 +128,27 @@ export function getHourlyPoolStatus(pool: Pool, timestamp: BigInt): HourlyPoolSt
   return hourlyPoolStatus
 }
 
-export function updatePoolStatus(timestamp: BigInt, addedTxVolume: BigDecimal, addNewUser: boolean): Pool {
+export function updatePoolStatus(timestamp: BigInt, addedTxVolume: BigDecimal, addNewUser: boolean, addedTxFee: BigDecimal): Pool {
   let pool = loadPool()
   pool.txCount = pool.txCount.plus(BIG_INT_ONE)
   pool.volumeUSD = pool.volumeUSD.plus(addedTxVolume)
   pool.avgTrade = pool.volumeUSD.div(pool.txCount.toBigDecimal())
+  pool.feeUSD = pool.feeUSD.plus(addedTxFee)
+  pool.avgTradeFee = pool.feeUSD.div(pool.txCount.toBigDecimal())
 
   if (addNewUser) {
     pool.uniqueUsers = pool.uniqueUsers.plus(BIG_INT_ONE)
   }
 
-  updateDailyPoolStatus(pool, timestamp, addedTxVolume)
-  updateHourlyPoolStatus(pool, timestamp, addedTxVolume)
+  updateDailyPoolStatus(pool, timestamp, addedTxVolume, addedTxFee)
+  updateHourlyPoolStatus(pool, timestamp, addedTxVolume, addedTxFee)
 
   pool.save()
 
   return pool
 }
 
-function updateDailyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: BigDecimal): DailyPoolStatus {
+function updateDailyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: BigDecimal, addedTxFee: BigDecimal): DailyPoolStatus {
   let dailyPoolStatus = getDailyPoolStatus(pool, timestamp)
   let poolTokensSupply = getPoolTokenSupply(pool.id)
 
@@ -145,18 +156,22 @@ function updateDailyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: Big
   dailyPoolStatus.volumeUSD = dailyPoolStatus.volumeUSD.plus(addedTxVolume)
   dailyPoolStatus.avgTrade = dailyPoolStatus.volumeUSD.div(dailyPoolStatus.txCount.toBigDecimal())
   dailyPoolStatus.poolTokensSupply = poolTokensSupply
+  dailyPoolStatus.feeUSD = dailyPoolStatus.feeUSD.plus(addedTxFee)
+  dailyPoolStatus.avgTradeFee = dailyPoolStatus.feeUSD.div(dailyPoolStatus.txCount.toBigDecimal())
 
   dailyPoolStatus.save()
 
   return dailyPoolStatus
 }
 
-function updateHourlyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: BigDecimal): HourlyPoolStatus {
+function updateHourlyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: BigDecimal, addedTxFee: BigDecimal): HourlyPoolStatus {
   let hourlyPoolStatus = getHourlyPoolStatus(pool, timestamp)
 
   hourlyPoolStatus.txCount = hourlyPoolStatus.txCount.plus(BIG_INT_ONE)
   hourlyPoolStatus.volumeUSD = hourlyPoolStatus.volumeUSD.plus(addedTxVolume)
   hourlyPoolStatus.avgTrade = hourlyPoolStatus.volumeUSD.div(hourlyPoolStatus.txCount.toBigDecimal())
+  hourlyPoolStatus.feeUSD = hourlyPoolStatus.feeUSD.plus(addedTxFee)
+  hourlyPoolStatus.avgTradeFee = hourlyPoolStatus.feeUSD.div(hourlyPoolStatus.txCount.toBigDecimal())
 
   hourlyPoolStatus.save()
 

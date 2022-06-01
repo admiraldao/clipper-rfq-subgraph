@@ -17,6 +17,10 @@ type Pool @entity {
   avgTrade: BigDecimal!
   # all time number of transactions
   txCount: BigInt!
+  # all time fee collected in USD
+  feeUSD: BigDecimal!
+  # Average trade fee of all time in USD
+  avgTradeFee: BigDecimal
 
   # all time deposits count
   depositCount: BigInt!
@@ -53,8 +57,12 @@ type DailyPoolStatus @entity {
   txCount: BigInt!
   # volume in USD
   volumeUSD: BigDecimal!
-  # Average trade amount of all time in USD
+  # Average trade amount in USD
   avgTrade: BigDecimal!
+  # fee collected in USD
+  feeUSD: BigDecimal!
+  # Average trade fee in USD
+  avgTradeFee: BigDecimal
 
   # number of deposits during daily period
   depositCount: BigInt!
@@ -83,6 +91,10 @@ type HourlyPoolStatus @entity {
   volumeUSD: BigDecimal!
   # Average trade amount of USD during hourly period
   avgTrade: BigDecimal!
+  # fee collected in USD
+  feeUSD: BigDecimal!
+  # Average trade fee in USD
+  avgTradeFee: BigDecimal
 
   # number of deposits during hourly period
   depositCount: BigInt!
@@ -154,6 +166,7 @@ type Swap @entity(immutable: true) {
   # derived info
   amountInUSD: BigDecimal!
   amountOutUSD: BigDecimal!
+  feeUSD: BigDecimal!
 
   pricePerInputToken: BigDecimal!
   pricePerOutputToken: BigDecimal!
