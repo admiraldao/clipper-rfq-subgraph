@@ -37,6 +37,9 @@ export let AddressZeroDecimals = '{{addressZeroMap.decimals}}'
 export let AddressZeroName = '{{addressZeroMap.name}}'
 
 export let ShorttailAssets = new TypedMap<Address, string>()
+// native address across all chains
+ShorttailAssets.set(Address.fromString('0x0000000000000000000000000000000000000000'), 'NATIVE')
+
 // mainnet
 ShorttailAssets.set(Address.fromString('0x0000000000000000000000000000000000000802'), 'GLMR')
 ShorttailAssets.set(Address.fromString('0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'), 'WBTC')
