@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
 import { convertTokenToDecimal } from '.'
 import { ERC20 } from '../../types/ClipperDirectExchange/ERC20'
 import { Token } from '../../types/schema'
@@ -62,6 +62,8 @@ export function fetchTokenBalance(token: Token, wallet: Address): BigDecimal {
   let tokenBigBalance = BIG_INT_ONE
   if (!tokenBigBalanceResult.reverted) {
     tokenBigBalance = tokenBigBalanceResult.value
+  } else {
+    log.info('Error fetching balance of {}', [token.id])
   }
   let tokenBalance = convertTokenToDecimal(tokenBigBalance, token.decimals)
 

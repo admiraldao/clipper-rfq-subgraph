@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal } from '@graphprotocol/graph-ts'
 import { CoveDeposited, CoveSwapped, CoveWithdrawn } from '../types/ClipperCove/ClipperCove'
 import { CoveDeposit, Swap } from '../types/schema'
 import { AddressZeroAddress, clipperDirectExchangeAddress } from './addresses'
@@ -7,7 +7,7 @@ import { loadCove, loadUserCoveStake } from './entities/Cove'
 import { updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
 import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils'
-import { getCoveBalances, getCoveInternalDepositSupply } from './utils/cove'
+import { getCoveBalances } from './utils/cove'
 import { getCurrentPoolLiquidity, getPoolTokenSupply } from './utils/pool'
 import { getCoveAssetPrice, getUsdPrice } from './utils/prices'
 import { fetchTokenBalance } from './utils/token'
@@ -20,7 +20,7 @@ export function handleCoveDeposited(event: CoveDeposited): void {
   
   // internal deposit token for cove info
   let internalDepositTokens = event.params.poolTokens
-  let internalTotalDepositTokens = getCoveInternalDepositSupply(coveAddress)
+  let internalTotalDepositTokens = event.params.poolTokensAfterDeposit
 
   // general cove info
   let coveBalances = getCoveBalances(coveAddress, coveAsset.decimals.toI32())
@@ -30,13 +30,13 @@ export function handleCoveDeposited(event: CoveDeposited): void {
   let poolLiquidity = getCurrentPoolLiquidity(clipperDirectExchangeAddress.toHexString())
   let poolTokens = getPoolTokenSupply(clipperDirectExchangeAddress.toHexString())
 
-  let depositOwnedFraction = internalDepositTokens.div(internalTotalDepositTokens)
+  let depositOwnedFraction = internalDepositTokens.toBigDecimal().div(internalTotalDepositTokens.toBigDecimal())
   let covePoolFraction = covePoolTokens.div(convertTokenToDecimal(poolTokens, BIG_INT_EIGHTEEN))
 
   let poolTokensCoveLiquidity = poolLiquidity.times(covePoolFraction)
   // multiply by two because the cove liquidity should be twice as the amount of pool tokens
   let coveLiquidity = poolTokensCoveLiquidity.times(BigDecimal.fromString('2'))
-  let estimatedUsdDepositValue = coveLiquidity.times(depositOwnedFraction.toBigDecimal())
+  let estimatedUsdDepositValue = coveLiquidity.times(depositOwnedFraction)
 
   let longTailTokens = coveBalances[1]
 
@@ -61,7 +61,6 @@ export function handleCoveDeposited(event: CoveDeposited): void {
   cove.save()
   userCoveStake.save()
   coveAsset.save()
-
 }
 
 export function handleCoveSwapped(event: CoveSwapped): void {
