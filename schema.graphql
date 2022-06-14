@@ -21,6 +21,7 @@ type Pool @entity {
   feeUSD: BigDecimal!
   # Average trade fee of all time in USD
   avgTradeFee: BigDecimal
+  avgFeeInBps: BigDecimal!
 
   # all time deposits count
   depositCount: BigInt!
@@ -63,6 +64,7 @@ type DailyPoolStatus @entity {
   feeUSD: BigDecimal!
   # Average trade fee in USD
   avgTradeFee: BigDecimal
+  avgFeeInBps: BigDecimal!
 
   # number of deposits during daily period
   depositCount: BigInt!
@@ -95,6 +97,7 @@ type HourlyPoolStatus @entity {
   feeUSD: BigDecimal!
   # Average trade fee in USD
   avgTradeFee: BigDecimal
+  avgFeeInBps: BigDecimal!
 
   # number of deposits during hourly period
   depositCount: BigInt!
