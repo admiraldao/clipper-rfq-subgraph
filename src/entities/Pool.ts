@@ -18,6 +18,7 @@ export function loadPool(): Pool {
 
     pool.feeUSD = BIG_DECIMAL_ZERO
     pool.avgTradeFee = BIG_DECIMAL_ZERO
+    pool.avgFeeInBps = BIG_DECIMAL_ZERO
 
     //deposits
     pool.avgDeposit = BIG_DECIMAL_ZERO
@@ -62,6 +63,7 @@ export function getDailyPoolStatus(pool: Pool, timestamp: BigInt): DailyPoolStat
 
     dailyPoolStatus.feeUSD = BIG_DECIMAL_ZERO
     dailyPoolStatus.avgTradeFee = BIG_DECIMAL_ZERO
+    dailyPoolStatus.avgFeeInBps =  BIG_DECIMAL_ZERO
 
     //deposits
     dailyPoolStatus.avgDeposit = BIG_DECIMAL_ZERO
@@ -107,6 +109,7 @@ export function getHourlyPoolStatus(pool: Pool, timestamp: BigInt): HourlyPoolSt
 
     hourlyPoolStatus.feeUSD = BIG_DECIMAL_ZERO
     hourlyPoolStatus.avgTradeFee = BIG_DECIMAL_ZERO
+    hourlyPoolStatus.avgFeeInBps = BIG_DECIMAL_ZERO
 
     //deposits
     hourlyPoolStatus.avgDeposit = BIG_DECIMAL_ZERO
@@ -135,6 +138,7 @@ export function updatePoolStatus(timestamp: BigInt, addedTxVolume: BigDecimal, a
   pool.avgTrade = pool.volumeUSD.div(pool.txCount.toBigDecimal())
   pool.feeUSD = pool.feeUSD.plus(addedTxFee)
   pool.avgTradeFee = pool.feeUSD.div(pool.txCount.toBigDecimal())
+  pool.avgFeeInBps = pool.feeUSD.div(pool.volumeUSD).times(BigDecimal.fromString('100')).times(BigDecimal.fromString('100'))
 
   if (addNewUser) {
     pool.uniqueUsers = pool.uniqueUsers.plus(BIG_INT_ONE)
@@ -158,6 +162,7 @@ function updateDailyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: Big
   dailyPoolStatus.poolTokensSupply = poolTokensSupply
   dailyPoolStatus.feeUSD = dailyPoolStatus.feeUSD.plus(addedTxFee)
   dailyPoolStatus.avgTradeFee = dailyPoolStatus.feeUSD.div(dailyPoolStatus.txCount.toBigDecimal())
+  dailyPoolStatus.avgFeeInBps = dailyPoolStatus.feeUSD.div(dailyPoolStatus.volumeUSD).times(BigDecimal.fromString('100')).times(BigDecimal.fromString('100'))
 
   dailyPoolStatus.save()
 
@@ -172,6 +177,7 @@ function updateHourlyPoolStatus(pool: Pool, timestamp: BigInt, addedTxVolume: Bi
   hourlyPoolStatus.avgTrade = hourlyPoolStatus.volumeUSD.div(hourlyPoolStatus.txCount.toBigDecimal())
   hourlyPoolStatus.feeUSD = hourlyPoolStatus.feeUSD.plus(addedTxFee)
   hourlyPoolStatus.avgTradeFee = hourlyPoolStatus.feeUSD.div(hourlyPoolStatus.txCount.toBigDecimal())
+  hourlyPoolStatus.avgFeeInBps = hourlyPoolStatus.feeUSD.div(hourlyPoolStatus.volumeUSD).times(BigDecimal.fromString('100')).times(BigDecimal.fromString('100'))
 
   hourlyPoolStatus.save()
 
