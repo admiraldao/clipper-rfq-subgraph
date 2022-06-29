@@ -22,6 +22,7 @@ interface Deployment {
   maticOracleAddress: string
   dotOracleAddress: string
   linkOracleAddress: string
+  opOracleAddress: string
 
   addressZeroMap: {
     symbol: string
@@ -89,6 +90,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       maticOracleAddress: '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0',
       dotOracleAddress: '0x0000000000000000000000000000000000000000',
       linkOracleAddress: '0x0000000000000000000000000000000000000000',
+      opOracleAddress: '0x0000000000000000000000000000000000000000',
       ...commonConfig,
     }
   }
@@ -120,6 +122,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       maticOracleAddress: '0x0000000000000000000000000000000000000000',
       dotOracleAddress: '0xA873F6b30aD79fCAF9b03A0A883d6D1f18D661d7',
       linkOracleAddress: '0x0000000000000000000000000000000000000000',
+      opOracleAddress: '0x0000000000000000000000000000000000000000',
       ...commonConfig,
     }
   }
@@ -127,11 +130,11 @@ async function fetchDeployment(source: string): Promise<Deployment> {
   if (source === 'optimism') {
     return {
       networkName: 'optimism',
-      startBlock: 3183055,
-      coveStartBlock: 3183055,
+      startBlock: 12746008,
+      coveStartBlock: 12746008,
 
       // Core
-      clipperDirectExchange: '0xDBD4ffC32b34f630DD8aC18D37162eC8462db7dB',
+      clipperDirectExchange: '0x5130f6cE257B8F9bF7fac0A0b519Bd588120ed40',
       clipperCove: '0x0000000000000000000000000000000000000000',
 
       addressZeroMap: {
@@ -151,6 +154,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       maticOracleAddress: '0x0000000000000000000000000000000000000000',
       dotOracleAddress: '0x0000000000000000000000000000000000000000',
       linkOracleAddress: '0xCc232dcFAAE6354cE191Bd574108c1aD03f86450',
+      opOracleAddress: '0x0D276FC14719f9292D5C1eA2198673d1f4269246',
       ...commonConfig,
     }
   }
@@ -171,7 +175,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
         name: 'GLMR token',
         address: '0x0000000000000000000000000000000000000802',
       },
-      
+
       // Currencies
       ethOracleAddress: '0x0000000000000000000000000000000000000000',
       btcOracleAddress: '0x0000000000000000000000000000000000000000',
@@ -182,6 +186,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       maticOracleAddress: '0x0000000000000000000000000000000000000000',
       dotOracleAddress: '0x0000000000000000000000000000000000000000',
       linkOracleAddress: '0x0000000000000000000000000000000000000000',
+      opOracleAddress: '0x0000000000000000000000000000000000000000',
       ...commonConfig,
     }
   }
@@ -213,6 +218,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       maticOracleAddress: '0x0000000000000000000000000000000000000000',
       dotOracleAddress: '0x0000000000000000000000000000000000000000',
       linkOracleAddress: '0x0000000000000000000000000000000000000000',
+      opOracleAddress: '0x0000000000000000000000000000000000000000',
       ...commonConfig,
     }
   }

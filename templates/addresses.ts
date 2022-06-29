@@ -63,6 +63,7 @@ ShorttailAssets.set(Address.fromString('0x94b008aa00579c1307b0ef2c499ad98a8ce58e
 ShorttailAssets.set(Address.fromString('0x68f180fcce6836688e9084f035309e29bf0a2095'), 'WBTC')
 ShorttailAssets.set(Address.fromString('0xda10009cbd5d07dd0cecc66161fc93d7c9000da1'), 'DAI')
 ShorttailAssets.set(Address.fromString('0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6'), 'LINK')
+ShorttailAssets.set(Address.fromString('0x4200000000000000000000000000000000000042'), 'OP')
 
 // moonbeam
 ShorttailAssets.set(Address.fromString('0x8f552a71efe5eefc207bf75485b356a0b3f01ec9'), 'USDC')
