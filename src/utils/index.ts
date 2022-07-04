@@ -1,5 +1,5 @@
 import { Address, BigDecimal, BigInt, Bytes } from '@graphprotocol/graph-ts'
-import {  Token, TransactionSource } from '../../types/schema'
+import { Token, TransactionSource } from '../../types/schema'
 import { ShorttailAssets } from '../addresses'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO, LongTailType, ShortTailType } from '../constants'
 import { fetchTokenDecimals, fetchTokenName, fetchTokenSymbol } from './token'
@@ -21,6 +21,10 @@ export function convertTokenToDecimal(tokenAmount: BigInt, exchangeDecimals: Big
 
 export function loadTransactionSource(auxData: Bytes): TransactionSource {
   let txSourceId = auxData.toString() || 'Unknown'
+
+  if (txSourceId.includes('Clipper')) {
+    txSourceId = 'Clipper'
+  }
 
   let txSource = TransactionSource.load(txSourceId)
   if (!txSource) {

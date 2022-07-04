@@ -131,11 +131,11 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     return {
       networkName: 'optimism',
       startBlock: 12746008,
-      coveStartBlock: 12746008,
+      coveStartBlock: 12747614,
 
       // Core
       clipperDirectExchange: '0x5130f6cE257B8F9bF7fac0A0b519Bd588120ed40',
-      clipperCove: '0x0000000000000000000000000000000000000000',
+      clipperCove: '0x93baB043d534FbFDD13B405241be9267D393b827',
 
       addressZeroMap: {
         symbol: 'ETH',
