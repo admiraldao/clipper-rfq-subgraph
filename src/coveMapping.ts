@@ -2,9 +2,16 @@ import { Address, BigDecimal } from '@graphprotocol/graph-ts'
 import { CoveDeposited, CoveSwapped, CoveWithdrawn } from '../types/ClipperCove/ClipperCove'
 import { CoveDeposit, Swap } from '../types/schema'
 import { AddressZeroAddress, clipperDirectExchangeAddress } from './addresses'
-import { ADDRESS_ZERO, BIG_DECIMAL_ZERO, BIG_INT_EIGHTEEN, BIG_INT_ONE, BIG_INT_ZERO, LongTailType, ShortTailType } from './constants'
+import {
+  ADDRESS_ZERO,
+  BIG_DECIMAL_ZERO,
+  BIG_INT_EIGHTEEN,
+  BIG_INT_ONE,
+  BIG_INT_ZERO,
+  LongTailType,
+  ShortTailType,
+} from './constants'
 import { loadCove, loadUserCoveStake } from './entities/Cove'
-import { updatePoolStatus } from './entities/Pool'
 import { upsertUser } from './entities/User'
 import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils'
 import { getCoveBalances } from './utils/cove'
@@ -17,7 +24,7 @@ export function handleCoveDeposited(event: CoveDeposited): void {
   let cove = loadCove(coveAddress, event.params.depositor, event.block.timestamp, event.transaction.hash)
   let coveAsset = loadToken(event.params.tokenAddress)
   let userCoveStake = loadUserCoveStake(cove.id, event.params.depositor)
-  
+
   // internal deposit token for cove info
   let internalDepositTokens = event.params.poolTokens
   let internalTotalDepositTokens = event.params.poolTokensAfterDeposit
@@ -64,8 +71,10 @@ export function handleCoveDeposited(event: CoveDeposited): void {
 }
 
 export function handleCoveSwapped(event: CoveSwapped): void {
-  let inAssetAddress = event.params.inAsset.toHex() == ADDRESS_ZERO ? Address.fromString(AddressZeroAddress) : event.params.inAsset
-  let outAssetAddress = event.params.outAsset.toHex() == ADDRESS_ZERO ? Address.fromString(AddressZeroAddress) : event.params.outAsset
+  let inAssetAddress =
+    event.params.inAsset.toHex() == ADDRESS_ZERO ? Address.fromString(AddressZeroAddress) : event.params.inAsset
+  let outAssetAddress =
+    event.params.outAsset.toHex() == ADDRESS_ZERO ? Address.fromString(AddressZeroAddress) : event.params.outAsset
 
   let inAsset = loadToken(inAssetAddress)
   let outAsset = loadToken(outAssetAddress)
@@ -79,7 +88,7 @@ export function handleCoveSwapped(event: CoveSwapped): void {
   let outTokenBalance: BigDecimal
   let inTokenBalanceUsd: BigDecimal
   let outTokenBalanceUsd: BigDecimal
-  let inCovePoolTokenAmount: BigDecimal 
+  let inCovePoolTokenAmount: BigDecimal
   let outCovePoolTokenAmount: BigDecimal
   let inCoveLiquidity: BigDecimal
   let outCoveLiquidity: BigDecimal
@@ -162,10 +171,6 @@ export function handleCoveSwapped(event: CoveSwapped): void {
   let isUnique = upsertUser(event.transaction.from.toHexString(), event.block.timestamp, transactionVolume)
   swap.sender = event.transaction.from.toHexString()
 
-  if (inAsset.type == ShortTailType || outAsset.type == ShortTailType) {
-    updatePoolStatus(event.block.timestamp, transactionVolume, isUnique, feeUSD)
-  }
-
   if (inAsset.type == LongTailType) {
     let cove = loadCove(inAssetAddress, event.params.recipient, event.block.timestamp, event.transaction.hash)
     cove.swapCount = cove.swapCount.plus(BIG_INT_ONE)
@@ -190,7 +195,6 @@ export function handleCoveSwapped(event: CoveSwapped): void {
     }
 
     cove.save()
-
   }
 
   swap.save()
@@ -215,7 +219,6 @@ export function handleCoveWithdrawn(event: CoveWithdrawn): void {
   coveAsset.tvl = assetBalance
   coveAsset.tvlUSD = assetBalanceUsd
 
-  
   userCoveStake.depositTokens = userCoveStake.depositTokens.minus(event.params.poolTokens)
   if (userCoveStake.depositTokens.minus(event.params.poolTokens).le(BIG_INT_ZERO)) {
     userCoveStake.active = false

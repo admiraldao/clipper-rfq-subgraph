@@ -74,7 +74,4 @@ ShorttailAssets.set(Address.fromString('0xc234a67a4f840e61ade794be47de455361b524
 ShorttailAssets.set(Address.fromString('0x1d4c2a246311bb9f827f4c768e277ff5787b7d7e'), 'MOVR')
 
 // ClipperLP
-ShorttailAssets.set(Address.fromString('0xce37051a3e60587157dc4c0391b4c555c6e68255'), 'CLIPPERLP') // Moonbeam
-ShorttailAssets.set(Address.fromString('0x6bfce69d1df30fd2b2c8e478edec9daa643ae3b8'), 'CLIPPERLP') // Polygon
-ShorttailAssets.set(Address.fromString('0xdbd4ffc32b34f630dd8ac18d37162ec8462db7db'), 'CLIPPERLP') // Optimism
-ShorttailAssets.set(Address.fromString('0xcc12532e95c2a6a4c53af153b9b739a3cc9218a7'), 'CLIPPERLP') // Mainnet
+ShorttailAssets.set(Address.fromString('{{clipperDirectExchange}}'), 'CLIPPERLP')
