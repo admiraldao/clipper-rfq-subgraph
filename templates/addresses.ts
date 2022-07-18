@@ -74,4 +74,4 @@ ShorttailAssets.set(Address.fromString('0xc234a67a4f840e61ade794be47de455361b524
 ShorttailAssets.set(Address.fromString('0x1d4c2a246311bb9f827f4c768e277ff5787b7d7e'), 'MOVR')
 
 // ClipperLP
-ShorttailAssets.set(Address.fromString('{{clipperDirectExchange}}'), 'CLIPPERLP')
+ShorttailAssets.set(Address.fromString('{{clipperDirectExchange}}'), 'CLPRDRPL')
