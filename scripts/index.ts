@@ -23,6 +23,7 @@ interface Deployment {
   dotOracleAddress: string
   linkOracleAddress: string
   opOracleAddress: string
+  glmrOracleAddress: string
 
   addressZeroMap: {
     symbol: string
@@ -48,6 +49,17 @@ interface Deployment {
 
 async function fetchDeployment(source: string): Promise<Deployment> {
   const commonConfig = {
+    ethOracleAddress: '0x0000000000000000000000000000000000000000',
+    btcOracleAddress: '0x0000000000000000000000000000000000000000',
+    daiOracleAddress: '0x0000000000000000000000000000000000000000',
+    usdcOracleAddress: '0x0000000000000000000000000000000000000000',
+    usdtOracleAddress: '0x0000000000000000000000000000000000000000',
+    jpyOracleAddress: '0x0000000000000000000000000000000000000000',
+    maticOracleAddress: '0x0000000000000000000000000000000000000000',
+    dotOracleAddress: '0x0000000000000000000000000000000000000000',
+    linkOracleAddress: '0x0000000000000000000000000000000000000000',
+    opOracleAddress: '0x0000000000000000000000000000000000000000',
+    glmrOracleAddress: '0x0000000000000000000000000000000000000000',
     // as of 19/03/2022 at 00:20 AM ET.
     fallbackPrices: {
       WETH: 2948.37,
@@ -80,6 +92,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
         name: 'Matic',
         address: '0x0000000000000000000000000000000000000000',
       },
+      ...commonConfig,
       // Currencies
       ethOracleAddress: '0xF9680D99D6C9589e2a93a78A04A279e509205945',
       btcOracleAddress: '0xDE31F8bFBD8c84b5360CFACCa3539B938dd78ae6',
@@ -88,10 +101,6 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       usdtOracleAddress: '0x0A6513e40db6EB1b165753AD52E80663aeA50545',
       jpyOracleAddress: '0xD647a6fC9BC6402301583C91decC5989d8Bc382D',
       maticOracleAddress: '0xAB594600376Ec9fD91F8e885dADF0CE036862dE0',
-      dotOracleAddress: '0x0000000000000000000000000000000000000000',
-      linkOracleAddress: '0x0000000000000000000000000000000000000000',
-      opOracleAddress: '0x0000000000000000000000000000000000000000',
-      ...commonConfig,
     }
   }
 
@@ -112,18 +121,11 @@ async function fetchDeployment(source: string): Promise<Deployment> {
         address: '0x0000000000000000000000000000000000000000',
       },
 
+      ...commonConfig,
       // Currencies
       ethOracleAddress: '0x3669da30c33D27A6A579548fCfc345fE5dEdda6e',
       btcOracleAddress: '0xCf88A8d7fc1A687895fC8ffAad567f303926B094',
-      daiOracleAddress: '0x0000000000000000000000000000000000000000',
-      usdcOracleAddress: '0x0000000000000000000000000000000000000000',
-      usdtOracleAddress: '0x0000000000000000000000000000000000000000',
-      jpyOracleAddress: '0x0000000000000000000000000000000000000000',
-      maticOracleAddress: '0x0000000000000000000000000000000000000000',
       dotOracleAddress: '0xA873F6b30aD79fCAF9b03A0A883d6D1f18D661d7',
-      linkOracleAddress: '0x0000000000000000000000000000000000000000',
-      opOracleAddress: '0x0000000000000000000000000000000000000000',
-      ...commonConfig,
     }
   }
 
@@ -144,18 +146,15 @@ async function fetchDeployment(source: string): Promise<Deployment> {
         address: '0x0000000000000000000000000000000000000000',
       },
 
+      ...commonConfig,
       // Currencies
       ethOracleAddress: '0x13e3Ee699D1909E989722E753853AE30b17e08c5',
       btcOracleAddress: '0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593',
       daiOracleAddress: '0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6',
       usdcOracleAddress: '0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3',
       usdtOracleAddress: '0xECef79E109e997bCA29c1c0897ec9d7b03647F5E',
-      jpyOracleAddress: '0x0000000000000000000000000000000000000000',
-      maticOracleAddress: '0x0000000000000000000000000000000000000000',
-      dotOracleAddress: '0x0000000000000000000000000000000000000000',
       linkOracleAddress: '0xCc232dcFAAE6354cE191Bd574108c1aD03f86450',
       opOracleAddress: '0x0D276FC14719f9292D5C1eA2198673d1f4269246',
-      ...commonConfig,
     }
   }
 
@@ -176,18 +175,13 @@ async function fetchDeployment(source: string): Promise<Deployment> {
         address: '0x0000000000000000000000000000000000000802',
       },
 
-      // Currencies
-      ethOracleAddress: '0x0000000000000000000000000000000000000000',
-      btcOracleAddress: '0x0000000000000000000000000000000000000000',
-      daiOracleAddress: '0x0000000000000000000000000000000000000000',
-      usdcOracleAddress: '0x0000000000000000000000000000000000000000',
-      usdtOracleAddress: '0x0000000000000000000000000000000000000000',
-      jpyOracleAddress: '0x0000000000000000000000000000000000000000',
-      maticOracleAddress: '0x0000000000000000000000000000000000000000',
-      dotOracleAddress: '0x0000000000000000000000000000000000000000',
-      linkOracleAddress: '0x0000000000000000000000000000000000000000',
-      opOracleAddress: '0x0000000000000000000000000000000000000000',
       ...commonConfig,
+      // Currencies
+      ethOracleAddress: '0x9ce2388a1696e22F870341C3FC1E89710C7569B5',
+      btcOracleAddress: '0x8c4425e141979c66423A83bE2ee59135864487Eb',
+      usdcOracleAddress: '0xA122591F60115D63421f66F752EF9f6e0bc73abC',
+      dotOracleAddress: '0x1466b4bD0C4B6B8e1164991909961e0EE6a66d8c',
+      glmrOracleAddress: '0x4497B606be93e773bbA5eaCFCb2ac5E2214220Eb',
     }
   }
 
@@ -208,18 +202,13 @@ async function fetchDeployment(source: string): Promise<Deployment> {
         address: '0x0000000000000000000000000000000000000000',
       },
 
+      ...commonConfig,
       // currency oracles
       ethOracleAddress: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
       btcOracleAddress: '0xf4030086522a5beea4988f8ca5b36dbc97bee88c',
       daiOracleAddress: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
       usdcOracleAddress: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6',
       usdtOracleAddress: '0x3E7d1eAB13ad0104d2750B8863b489D65364e32D',
-      jpyOracleAddress: '0x0000000000000000000000000000000000000000',
-      maticOracleAddress: '0x0000000000000000000000000000000000000000',
-      dotOracleAddress: '0x0000000000000000000000000000000000000000',
-      linkOracleAddress: '0x0000000000000000000000000000000000000000',
-      opOracleAddress: '0x0000000000000000000000000000000000000000',
-      ...commonConfig,
     }
   }
 

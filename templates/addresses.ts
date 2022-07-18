@@ -16,6 +16,8 @@ PriceOracleAddresses.set('MATIC', '{{maticOracleAddress}}') // MATIC / USD chain
 PriceOracleAddresses.set('WMATIC', '{{maticOracleAddress}}') // MATIC / USD chainlink oracle
 PriceOracleAddresses.set('DOT', '{{dotOracleAddress}}') // DOT / USD chainlink oracle
 PriceOracleAddresses.set('LINK', '{{linkOracleAddress}}') // LINk / USD chainlink oracle
+PriceOracleAddresses.set('OP', '{{opOracleAddress}}') // OP / USD chainlink oracle
+PriceOracleAddresses.set('GLMR', '{{glmrOracleAddress}}')
 
 export let FallbackAssetPrice = new TypedMap<string, string>()
 FallbackAssetPrice.set('GLMR', '{{fallbackPrices.GLMR}}')
