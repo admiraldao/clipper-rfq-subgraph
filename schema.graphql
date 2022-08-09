@@ -1,11 +1,11 @@
 enum TokenType {
-  SHORTTAIL,
+  SHORTTAIL
   LONGTAIL
 }
 
 enum SwapType {
-  COVE,
-  POOL,
+  COVE
+  POOL
 }
 
 type Pool @entity {
@@ -79,6 +79,8 @@ type DailyPoolStatus @entity {
   withdrewUSD: BigDecimal!
   # Average withdrawal amount of USD during daily period
   avgWithdraw: BigDecimal!
+  ## pool liquidity value at the beginning of the day
+  poolValue: BigDecimal!
 }
 
 type HourlyPoolStatus @entity {
@@ -265,7 +267,7 @@ type Cove @entity {
   longtailAsset: Token!
   # all time USD swapped
   volumeUSD: BigDecimal!
-  # all time number of swaps using this cove 
+  # all time number of swaps using this cove
   swapCount: BigInt!
 
   # tvl of pool token and long tail currently held by the cove.
@@ -287,7 +289,6 @@ type Cove @entity {
   # all time withdrawals count
   withdrawalCount: BigInt!
 }
-
 
 type UserCoveStake @entity {
   # {coveId}-{wallet}
