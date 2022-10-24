@@ -189,11 +189,11 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     return {
       networkName: 'mainnet',
       startBlock: 15277939,
-      coveStartBlock: 14461923,
+      coveStartBlock: 15819271,
 
       // Core
       clipperDirectExchange: '0xe7b0ce0526fbe3969035a145c9e9691d4d9d216c',
-      clipperCove: '0x0000000000000000000000000000000000000000',
+      clipperCove: '0x44d097113DBEad613fde74b387081FB3b547C54f',
 
       addressZeroMap: {
         symbol: 'ETH',
@@ -209,6 +209,33 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       daiOracleAddress: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
       usdcOracleAddress: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6',
       usdtOracleAddress: '0x3E7d1eAB13ad0104d2750B8863b489D65364e32D',
+    }
+  }
+
+  if (source === 'arbitrum') {
+    return {
+      networkName: 'arbitrum-one',
+      startBlock: 30861559,
+      coveStartBlock: 31065917,
+
+      // Core
+      clipperDirectExchange: '0xe7b0ce0526fbe3969035a145c9e9691d4d9d216c',
+      clipperCove: '0x9e233dd6a90678baacd89c05ce5c48f43fcc106e',
+
+      addressZeroMap: {
+        symbol: 'ETH',
+        decimals: 18,
+        name: 'Ether',
+        address: '0x0000000000000000000000000000000000000000',
+      },
+
+      ...commonConfig,
+      // currency oracles
+      ethOracleAddress: '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612',
+      btcOracleAddress: '0x6ce185860a4963106506C203335A2910413708e9',
+      daiOracleAddress: '0xc5C8E77B397E531B8EC06BFb0048328B30E9eCfB',
+      usdcOracleAddress: '0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3',
+      usdtOracleAddress: '0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7',
     }
   }
 
