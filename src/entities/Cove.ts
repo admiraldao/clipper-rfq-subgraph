@@ -1,7 +1,7 @@
-import { Bytes, BigInt, Address } from "@graphprotocol/graph-ts"
-import { Cove, UserCoveStake } from "../../types/schema"
-import { BIG_DECIMAL_ZERO, BIG_INT_ZERO } from "../constants"
-import { loadToken } from "../utils"
+import { Bytes, BigInt, Address } from '@graphprotocol/graph-ts'
+import { Cove, UserCoveStake } from '../../types/schema'
+import { BIG_DECIMAL_ZERO, BIG_INT_ZERO } from '../constants'
+import { loadToken } from '../utils'
 
 export function loadCove(tokenAddress: Address, creator: Bytes, timestamp: BigInt, transaction: Bytes): Cove {
   let id = tokenAddress.toHexString()
@@ -9,10 +9,12 @@ export function loadCove(tokenAddress: Address, creator: Bytes, timestamp: BigIn
 
   if (!cove) {
     let coveAsset = loadToken(tokenAddress)
-    
+
     cove = new Cove(id)
 
     cove.longtailAsset = coveAsset.id
+    cove.coveAssetName = coveAsset.name
+    cove.coveAssetSymbol = coveAsset.symbol
     cove.createdAt = timestamp
     cove.creator = creator
     cove.transaction = transaction

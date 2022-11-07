@@ -265,6 +265,10 @@ type Cove @entity {
   id: ID!
   # pointer to CoveAsset
   longtailAsset: Token!
+  # duplicate of longtailAsset for easy filtering
+  coveAssetName: String!
+  coveAssetSymbol: String!
+
   # all time USD swapped
   volumeUSD: BigDecimal!
   # all time number of swaps using this cove
