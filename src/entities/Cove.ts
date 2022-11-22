@@ -41,7 +41,7 @@ export function loadCove(tokenAddress: Address, creator: Bytes, timestamp: BigIn
 }
 
 export function loadUserCoveStake(coveId: string, userWallet: Address): UserCoveStake {
-  let id = coveId.concat('-').concat(userWallet.toString())
+  let id = coveId.concat('-').concat(userWallet.toHexString())
   let stake = UserCoveStake.load(id)
 
   if (!stake) {

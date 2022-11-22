@@ -219,8 +219,9 @@ export function handleCoveWithdrawn(event: CoveWithdrawn): void {
   coveAsset.tvl = assetBalance
   coveAsset.tvlUSD = assetBalanceUsd
 
-  userCoveStake.depositTokens = userCoveStake.depositTokens.minus(event.params.poolTokens)
-  if (userCoveStake.depositTokens.minus(event.params.poolTokens).le(BIG_INT_ZERO)) {
+  let newDepositTokens = userCoveStake.depositTokens.minus(event.params.poolTokens)
+  userCoveStake.depositTokens = newDepositTokens
+  if (newDepositTokens.le(BIG_INT_ZERO)) {
     userCoveStake.active = false
   }
 
