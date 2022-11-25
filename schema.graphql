@@ -8,6 +8,11 @@ enum SwapType {
   POOL
 }
 
+enum StatusHistoricType {
+  HOURLY
+  DAILY
+}
+
 type Pool @entity {
   # pool address
   id: ID!
@@ -184,6 +189,7 @@ type Swap @entity(immutable: true) {
   # pair traded (not required for cove swaps)
   pair: Pair
   swapType: SwapType
+  cove: Cove
 }
 
 type Pair @entity {
@@ -261,6 +267,34 @@ type Withdrawal @entity(immutable: true) {
   withdrawer: Bytes!
 }
 
+type CoveWithdrawal @entity(immutable: true) {
+  id: ID!
+  timestamp: BigInt!
+  cove: Cove!
+  amountUsd: BigDecimal!
+  withdrawer: Bytes!
+}
+
+type AllCoveStatus @entity {
+  "Id of smart contract"
+  id: ID!
+  volumeUSD: BigDecimal!
+  txCount: Int!
+  depositCount: Int!
+  withdrawalCount: Int!
+}
+
+type AllCovesHistoricStatus @entity {
+  id: ID!
+  from: BigInt!
+  to: BigInt!
+  volumeUSD: BigDecimal!
+  txCount: Int!
+  depositCount: Int!
+  withdrawalCount: Int!
+  statusType: StatusHistoricType!
+}
+
 type Cove @entity {
   id: ID!
   # pointer to CoveAsset
@@ -292,6 +326,19 @@ type Cove @entity {
   depositCount: BigInt!
   # all time withdrawals count
   withdrawalCount: BigInt!
+}
+
+type HistoricCoveStatus @entity {
+  id: ID!
+  cove: Cove!
+  from: BigInt!
+  to: BigInt!
+  volumeUSD: BigDecimal!
+  price: BigDecimal!
+  txCount: Int!
+  depositCount: Int!
+  withdrawalCount: Int!
+  statusType: StatusHistoricType!
 }
 
 type UserCoveStake @entity {

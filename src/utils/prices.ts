@@ -8,7 +8,7 @@ import { getCurrentPoolLiquidity, getPoolTokenSupply } from './pool'
 
 export function getUsdPrice(tokenSymbol: string): BigDecimal {
   let priceOracleAddress = PriceOracleAddresses.get(tokenSymbol)
-  let oracleAddressString = priceOracleAddress ? priceOracleAddress.toString(): ADDRESS_ZERO
+  let oracleAddressString = priceOracleAddress ? priceOracleAddress.toString() : ADDRESS_ZERO
   let oracleValueExist = PriceOracleAddresses.isSet(tokenSymbol)
   let fallbackExist = FallbackAssetPrice.isSet(tokenSymbol)
 
@@ -48,14 +48,18 @@ export function getCoveAssetPrice(coveAddress: Address, decimals: number): Typed
 
   // multiply by two since the amount of longtail assets should be approx the same, in usd value as the pool tokens added
   let coveLiquidity = usdProportion.times(BigDecimal.fromString('2'))
-  let assetPrice = longtailAssetBalance.le(BIG_DECIMAL_ZERO) ? BIG_DECIMAL_ZERO : usdProportion.div(longtailAssetBalance)
+  let assetPrice = longtailAssetBalance.le(BIG_DECIMAL_ZERO)
+    ? BIG_DECIMAL_ZERO
+    : usdProportion.div(longtailAssetBalance)
 
   let returnValue = new TypedMap<string, BigDecimal>()
   returnValue.set('coveLiquidity', coveLiquidity)
   returnValue.set('assetPrice', assetPrice)
   returnValue.set('assetBalance', longtailAssetBalance)
   returnValue.set('poolTokenBalance', poolTokens)
+  returnValue.set('longtailAssetBalance', longtailAssetBalance)
+  returnValue.set('totalPoolTokens', totalPoolTokens)
+  returnValue.set('currentPoolLiquidity', currentPoolLiquidity)
 
   return returnValue
 }
-

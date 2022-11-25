@@ -1,21 +1,17 @@
-import { Address, BigDecimal } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, dataSource } from '@graphprotocol/graph-ts'
 import { CoveDeposited, CoveSwapped, CoveWithdrawn } from '../types/ClipperCove/ClipperCove'
-import { CoveDeposit, Swap } from '../types/schema'
+import { CoveDeposit, CoveWithdrawal, DailyPoolStatus, Swap } from '../types/schema'
 import { AddressZeroAddress, clipperDirectExchangeAddress } from './addresses'
+import { ADDRESS_ZERO, BIG_DECIMAL_ZERO, BIG_INT_EIGHTEEN, BIG_INT_ONE, BIG_INT_ZERO, LongTailType } from './constants'
 import {
-  ADDRESS_ZERO,
-  BIG_DECIMAL_ZERO,
-  BIG_INT_EIGHTEEN,
-  BIG_INT_ONE,
-  BIG_INT_ZERO,
-  LongTailType,
-  ShortTailType,
-} from './constants'
-import { loadCove, loadUserCoveStake } from './entities/Cove'
+  loadAllCoveStatus,
+  loadCove,
+  loadHistoricAllCoveStatus,
+  loadHistoricCoveStatus,
+  loadUserCoveStake,
+} from './entities/Cove'
 import { upsertUser } from './entities/User'
 import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils'
-import { getCoveBalances } from './utils/cove'
-import { getCurrentPoolLiquidity, getPoolTokenSupply } from './utils/pool'
 import { getCoveAssetPrice, getUsdPrice } from './utils/prices'
 import { fetchTokenBalance } from './utils/token'
 
@@ -24,35 +20,32 @@ export function handleCoveDeposited(event: CoveDeposited): void {
   let cove = loadCove(coveAddress, event.params.depositor, event.block.timestamp, event.transaction.hash)
   let coveAsset = loadToken(event.params.tokenAddress)
   let userCoveStake = loadUserCoveStake(cove.id, event.params.depositor)
+  let allCoveStatus = loadAllCoveStatus()
+  let dailyCoveStatus = loadHistoricCoveStatus(cove, event.block.timestamp, 'DAILY')
+  let dailyAllCoveStatus = loadHistoricAllCoveStatus(event.block.timestamp, 'DAILY')
+  let hourlyAllCoveStatus = loadHistoricAllCoveStatus(event.block.timestamp, 'HOURLY')
 
   // internal deposit token for cove info
   let internalDepositTokens = event.params.poolTokens
   let internalTotalDepositTokens = event.params.poolTokensAfterDeposit
 
-  // general cove info
-  let coveBalances = getCoveBalances(coveAddress, coveAsset.decimals.toI32())
-  let covePoolTokens = coveBalances[0]
-
-  // general pool info
-  let poolLiquidity = getCurrentPoolLiquidity(clipperDirectExchangeAddress.toHexString())
-  let poolTokens = getPoolTokenSupply(clipperDirectExchangeAddress.toHexString())
+  // general info
+  let coveInfo = getCoveAssetPrice(coveAddress, coveAsset.decimals.toI32())
+  let covePoolTokens = coveInfo.get('poolTokenBalance') as BigDecimal
+  let longTailTokens = coveInfo.get('longtailAssetBalance') as BigDecimal
+  let coveLiquidity = coveInfo.get('coveLiquidity') as BigDecimal
+  let covePrice = coveInfo.get('assetPrice') as BigDecimal
 
   let depositOwnedFraction = internalDepositTokens.toBigDecimal().div(internalTotalDepositTokens.toBigDecimal())
-  let covePoolFraction = covePoolTokens.div(convertTokenToDecimal(poolTokens, BIG_INT_EIGHTEEN))
 
-  let poolTokensCoveLiquidity = poolLiquidity.times(covePoolFraction)
-  // multiply by two because the cove liquidity should be twice as the amount of pool tokens
-  let coveLiquidity = poolTokensCoveLiquidity.times(BigDecimal.fromString('2'))
   let estimatedUsdDepositValue = coveLiquidity.times(depositOwnedFraction)
-
-  let longTailTokens = coveBalances[1]
 
   cove.depositCount = cove.depositCount.plus(BIG_INT_ONE)
   cove.poolTokenAmount = covePoolTokens
   cove.longtailTokenAmount = longTailTokens
   cove.tvlUSD = coveLiquidity
   coveAsset.tvl = longTailTokens
-  coveAsset.tvlUSD = poolTokensCoveLiquidity
+  coveAsset.tvlUSD = coveLiquidity.div(BigDecimal.fromString('2'))
   coveAsset.depositedUSD = coveAsset.depositedUSD.plus(estimatedUsdDepositValue)
 
   userCoveStake.active = true
@@ -64,6 +57,16 @@ export function handleCoveDeposited(event: CoveDeposited): void {
   newDeposit.amountUsd = estimatedUsdDepositValue
   newDeposit.depositor = event.params.depositor
 
+  allCoveStatus.depositCount = allCoveStatus.depositCount + 1
+  dailyCoveStatus.depositCount = dailyCoveStatus.depositCount + 1
+  dailyCoveStatus.price = covePrice
+  dailyAllCoveStatus.depositCount = dailyAllCoveStatus.depositCount + 1
+  hourlyAllCoveStatus.depositCount = dailyAllCoveStatus.depositCount + 1
+
+  dailyCoveStatus.save()
+  allCoveStatus.save()
+  dailyAllCoveStatus.save()
+  hourlyAllCoveStatus.save()
   newDeposit.save()
   cove.save()
   userCoveStake.save()
@@ -168,11 +171,24 @@ export function handleCoveSwapped(event: CoveSwapped): void {
   swap.transactionSource = txSource.id
   txSource.txCount = txSource.txCount.plus(BIG_INT_ONE)
 
+  let allCoveStatus = loadAllCoveStatus()
+  allCoveStatus.txCount = allCoveStatus.txCount + 1
+  allCoveStatus.volumeUSD = allCoveStatus.volumeUSD.plus(allCoveStatus.volumeUSD)
+
+  let dailyAllCoveStatus = loadHistoricAllCoveStatus(event.block.timestamp, 'DAILY')
+  dailyAllCoveStatus.txCount = dailyAllCoveStatus.txCount + 1
+  dailyAllCoveStatus.volumeUSD = dailyAllCoveStatus.volumeUSD.plus(transactionVolume)
+
+  let hourlyAllCoveStatus = loadHistoricAllCoveStatus(event.block.timestamp, 'HOURLY')
+  hourlyAllCoveStatus.txCount = hourlyAllCoveStatus.txCount + 1
+  hourlyAllCoveStatus.volumeUSD = hourlyAllCoveStatus.volumeUSD.plus(transactionVolume)
+
   let isUnique = upsertUser(event.transaction.from.toHexString(), event.block.timestamp, transactionVolume)
   swap.sender = event.transaction.from.toHexString()
 
   if (inAsset.type == LongTailType) {
     let cove = loadCove(inAssetAddress, event.params.recipient, event.block.timestamp, event.transaction.hash)
+    let dailyCoveStatus = loadHistoricCoveStatus(cove, event.block.timestamp, 'DAILY')
     cove.swapCount = cove.swapCount.plus(BIG_INT_ONE)
     cove.poolTokenAmount = inCovePoolTokenAmount
     cove.longtailTokenAmount = inTokenBalance
@@ -181,11 +197,19 @@ export function handleCoveSwapped(event: CoveSwapped): void {
       cove.tvlUSD = inCoveLiquidity
     }
 
+    swap.cove = cove.id
+
+    dailyCoveStatus.txCount = dailyCoveStatus.txCount + 1
+    dailyCoveStatus.volumeUSD = dailyCoveStatus.volumeUSD.plus(transactionVolume)
+    dailyCoveStatus.price = inputPrice
+
+    dailyCoveStatus.save()
     cove.save()
   }
 
   if (outAsset.type == LongTailType) {
     let cove = loadCove(outAssetAddress, event.params.recipient, event.block.timestamp, event.transaction.hash)
+    let dailyCoveStatus = loadHistoricCoveStatus(cove, event.block.timestamp, 'DAILY')
     cove.swapCount = cove.swapCount.plus(BIG_INT_ONE)
     cove.poolTokenAmount = outCovePoolTokenAmount
     cove.longtailTokenAmount = outTokenBalance
@@ -194,9 +218,18 @@ export function handleCoveSwapped(event: CoveSwapped): void {
       cove.tvlUSD = outCoveLiquidity
     }
 
+    swap.cove = cove.id
+    dailyCoveStatus.txCount = dailyCoveStatus.txCount + 1
+    dailyCoveStatus.volumeUSD = dailyCoveStatus.volumeUSD.plus(transactionVolume)
+    dailyCoveStatus.price = outputPrice
+
+    dailyCoveStatus.save()
     cove.save()
   }
 
+  allCoveStatus.save()
+  dailyAllCoveStatus.save()
+  hourlyAllCoveStatus.save()
   swap.save()
   txSource.save()
 }
@@ -204,6 +237,10 @@ export function handleCoveWithdrawn(event: CoveWithdrawn): void {
   let cove = loadCove(event.params.tokenAddress, event.params.withdrawer, event.block.timestamp, event.transaction.hash)
   let coveAsset = loadToken(event.params.tokenAddress)
   let userCoveStake = loadUserCoveStake(cove.id, event.params.withdrawer)
+  let allCoveStatus = loadAllCoveStatus()
+  let dailyCoveStatus = loadHistoricCoveStatus(cove, event.block.timestamp, 'DAILY')
+  let dailyAllCoveStatus = loadHistoricAllCoveStatus(event.block.timestamp, 'DAILY')
+  let hourlyAllCoveStatus = loadHistoricAllCoveStatus(event.block.timestamp, 'HOURLY')
 
   let coveAssetPrice = getCoveAssetPrice(event.params.tokenAddress, coveAsset.decimals.toI32())
   let assetBalance = coveAssetPrice.get('assetBalance') as BigDecimal
@@ -225,6 +262,30 @@ export function handleCoveWithdrawn(event: CoveWithdrawn): void {
     userCoveStake.active = false
   }
 
+  let withdrawnFraction = event.params.poolTokensAfterWithdrawal
+    .toBigDecimal()
+    .div(event.params.poolTokens.toBigDecimal())
+  // multiply by two because the cove liquidity should be twice as the amount of pool tokens
+  let estimatedUsdWithdrawalValue = coveLiquidity.times(withdrawnFraction)
+
+  let newWithdrawal = new CoveWithdrawal(event.transaction.hash.toHexString())
+  newWithdrawal.timestamp = event.block.timestamp
+  newWithdrawal.cove = cove.id
+  newWithdrawal.amountUsd = estimatedUsdWithdrawalValue
+  newWithdrawal.withdrawer = event.params.withdrawer
+
+  allCoveStatus.withdrawalCount = allCoveStatus.withdrawalCount + 1
+  dailyAllCoveStatus.withdrawalCount = dailyAllCoveStatus.withdrawalCount + 1
+  hourlyAllCoveStatus.withdrawalCount = hourlyAllCoveStatus.withdrawalCount + 1
+
+  dailyCoveStatus.withdrawalCount = dailyCoveStatus.withdrawalCount + 1
+  dailyCoveStatus.price = inputPrice
+
+  dailyCoveStatus.save()
+  newWithdrawal.save()
+  allCoveStatus.save()
+  dailyAllCoveStatus.save()
+  hourlyAllCoveStatus.save()
   cove.save()
   userCoveStake.save()
   coveAsset.save()
