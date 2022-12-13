@@ -262,9 +262,10 @@ export function handleCoveWithdrawn(event: CoveWithdrawn): void {
     userCoveStake.active = false
   }
 
-  let withdrawnFraction = event.params.poolTokensAfterWithdrawal
-    .toBigDecimal()
-    .div(event.params.poolTokens.toBigDecimal())
+  let internalPoolTokensBeforeWithdrawal = event.params.poolTokensAfterWithdrawal.isZero()
+    ? event.params.poolTokens
+    : event.params.poolTokensAfterWithdrawal
+  let withdrawnFraction = event.params.poolTokens.toBigDecimal().div(internalPoolTokensBeforeWithdrawal.toBigDecimal())
   // multiply by two because the cove liquidity should be twice as the amount of pool tokens
   let estimatedUsdWithdrawalValue = coveLiquidity.times(withdrawnFraction)
 
