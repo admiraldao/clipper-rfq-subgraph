@@ -34,6 +34,8 @@ type Pool @entity {
   avgDeposit: BigDecimal!
   # all time deposited amount in USD
   depositedUSD: BigDecimal!
+  # total revenue made by clipper fee split
+  revenueUSD: BigDecimal!
 
   # all time withdrawals count
   withdrawalCount: BigInt!
@@ -70,6 +72,8 @@ type DailyPoolStatus @entity {
   # Average trade fee in USD
   avgTradeFee: BigDecimal
   avgFeeInBps: BigDecimal!
+  # total revenue made by clipper fee split
+  revenueUSD: BigDecimal!
 
   # number of deposits during daily period
   depositCount: BigInt!

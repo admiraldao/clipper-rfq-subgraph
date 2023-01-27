@@ -1,8 +1,9 @@
-import { BigDecimal, BigInt, dataSource } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { DailyPoolStatus, HourlyPoolStatus, Pool } from '../../types/schema'
-import { clipperDirectExchangeAddress } from '../addresses'
+import { clipperDirectExchangeAddress, clipperFeeSplitAddress } from '../addresses'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO, ONE_DAY, ONE_HOUR } from '../constants'
 import { getCurrentPoolLiquidity, getPoolTokenSupply } from '../utils/pool'
+import { fetchBigIntTokenBalance } from '../utils/token'
 import { getOpenTime } from '../utils/timeHelpers'
 
 export function loadPool(): Pool {
@@ -19,6 +20,7 @@ export function loadPool(): Pool {
     pool.feeUSD = BIG_DECIMAL_ZERO
     pool.avgTradeFee = BIG_DECIMAL_ZERO
     pool.avgFeeInBps = BIG_DECIMAL_ZERO
+    pool.revenueUSD = BIG_DECIMAL_ZERO
 
     //deposits
     pool.avgDeposit = BIG_DECIMAL_ZERO
@@ -64,6 +66,7 @@ export function getDailyPoolStatus(pool: Pool, timestamp: BigInt): DailyPoolStat
     dailyPoolStatus.feeUSD = BIG_DECIMAL_ZERO
     dailyPoolStatus.avgTradeFee = BIG_DECIMAL_ZERO
     dailyPoolStatus.avgFeeInBps = BIG_DECIMAL_ZERO
+    dailyPoolStatus.revenueUSD = BIG_DECIMAL_ZERO
 
     //deposits
     dailyPoolStatus.avgDeposit = BIG_DECIMAL_ZERO
@@ -169,6 +172,12 @@ function updateDailyPoolStatus(
 ): DailyPoolStatus {
   let dailyPoolStatus = getDailyPoolStatus(pool, timestamp)
   let poolTokensSupply = getPoolTokenSupply(pool.id)
+  let poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(pool.id, clipperFeeSplitAddress)
+  // the fraction owned by fee split contract
+  let theFraction = poolTokenOwnedByFeeSplit.toBigDecimal().div(poolTokensSupply.toBigDecimal())
+  let revenueUSD = addedTxFee.times(theFraction).times(BigDecimal.fromString('0.5'))
+
+  pool.revenueUSD = pool.revenueUSD.plus(revenueUSD)
 
   dailyPoolStatus.txCount = dailyPoolStatus.txCount.plus(BIG_INT_ONE)
   dailyPoolStatus.volumeUSD = dailyPoolStatus.volumeUSD.plus(addedTxVolume)
@@ -180,6 +189,7 @@ function updateDailyPoolStatus(
     .div(dailyPoolStatus.volumeUSD)
     .times(BigDecimal.fromString('100'))
     .times(BigDecimal.fromString('100'))
+  dailyPoolStatus.revenueUSD = dailyPoolStatus.revenueUSD.plus(revenueUSD)
 
   dailyPoolStatus.save()
 
