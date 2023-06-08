@@ -3,6 +3,7 @@ import { Address, TypedMap } from '@graphprotocol/graph-ts'
 export let clipperDirectExchangeAddress = Address.fromString('{{clipperDirectExchange}}')
 export let clipperCoveAddress = Address.fromString('{{clipperCove}}')
 export let clipperFeeSplitAddress = Address.fromString('{{feeSplit}}')
+export let clipperPermitRouterAddress = Address.fromString('{{permitRouter}}')
 
 export let PriceOracleAddresses = new TypedMap<string, string>()
 PriceOracleAddresses.set('WETH', '{{ethOracleAddress}}') // eth / usd chainlink oracle
