@@ -83,8 +83,8 @@ async function fetchDeployment(source: string): Promise<Deployment> {
   if (source === 'matic') {
     return {
       networkName: 'matic',
-      startBlock: 43753320,
-      coveStartBlock: 43753320,
+      startBlock: 27340300,
+      coveStartBlock: 28486635,
 
       // Core
       clipperDirectExchange: '0x6Bfce69d1Df30FD2B2C8e478EDEC9dAa643Ae3B8',
