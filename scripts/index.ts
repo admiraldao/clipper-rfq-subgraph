@@ -12,6 +12,7 @@ interface Deployment {
   clipperDirectExchange: string
   clipperCove: string
   feeSplit: string
+  permitRouter: string
 
   // Currencies
   ethOracleAddress: string
@@ -62,6 +63,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     opOracleAddress: '0x0000000000000000000000000000000000000000',
     glmrOracleAddress: '0x0000000000000000000000000000000000000000',
     feeSplit: '0x0000000000000000000000000000000000000000',
+    permitRouter: '0x0000000000000000000000000000000000000000',
     // as of 19/03/2022 at 00:20 AM ET.
     fallbackPrices: {
       WETH: 2948.37,
@@ -95,6 +97,8 @@ async function fetchDeployment(source: string): Promise<Deployment> {
         address: '0x0000000000000000000000000000000000000000',
       },
       ...commonConfig,
+      permitRouter: '0xF33141BC4E9D1d92a2Adba2fa27A09c2DA2AF3eB',
+      
       // Currencies
       ethOracleAddress: '0xF9680D99D6C9589e2a93a78A04A279e509205945',
       btcOracleAddress: '0xDE31F8bFBD8c84b5360CFACCa3539B938dd78ae6',
@@ -149,6 +153,8 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       },
 
       ...commonConfig,
+      permitRouter: '0xF33141BC4E9D1d92a2Adba2fa27A09c2DA2AF3eB',
+
       // Currencies
       ethOracleAddress: '0x13e3Ee699D1909E989722E753853AE30b17e08c5',
       btcOracleAddress: '0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593',
@@ -233,6 +239,8 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       },
 
       ...commonConfig,
+      permitRouter: '0x154B08ca083baB868F8794e8b517Ea0fDd92D6E5',
+
       // currency oracles
       ethOracleAddress: '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612',
       btcOracleAddress: '0x6ce185860a4963106506C203335A2910413708e9',

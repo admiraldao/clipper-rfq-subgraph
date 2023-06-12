@@ -1,5 +1,5 @@
-import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import { AssetWithdrawn, Deposited, Swapped, Withdrawn } from '../types/ClipperDirectExchange/ClipperDirectExchange'
+import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
+import { AssetWithdrawn, Deposited, Swapped, Transfer, Withdrawn } from '../types/ClipperDirectExchange/ClipperDirectExchange'
 import { Deposit, Swap, Withdrawal } from '../types/schema'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE } from './constants'
 import { updatePair } from './entities/Pair'
@@ -9,7 +9,7 @@ import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils
 import { getCurrentPoolLiquidity, getPoolTokenSupply } from './utils/pool'
 import { getUsdPrice } from './utils/prices'
 import { fetchTokenBalance } from './utils/token'
-import { clipperDirectExchangeAddress } from './addresses'
+import { clipperDirectExchangeAddress, clipperPermitRouterAddress } from './addresses'
 
 export function handleDeposited(event: Deposited): void {
   let pool = loadPool()
@@ -189,4 +189,16 @@ export function handleSwapped(event: Swapped): void {
 
   swap.save()
   txSource.save()
+}
+
+export function handleTransfer(event: Transfer): void {
+  if (event.params.from.equals(clipperPermitRouterAddress)) {
+    let deposit = Deposit.load(event.transaction.hash.toHexString())
+    if (!deposit) {
+      return
+    }
+  
+    deposit.depositor = event.params.to
+    deposit.save()
+  }
 }
