@@ -224,12 +224,12 @@ async function fetchDeployment(source: string): Promise<Deployment> {
   if (source === 'arbitrum') {
     return {
       networkName: 'arbitrum-one',
-      startBlock: 30861559,
-      coveStartBlock: 31065917,
+      startBlock: 117111604,
+      coveStartBlock: 117186034,
 
       // Core
-      clipperDirectExchange: '0xe7b0ce0526fbe3969035a145c9e9691d4d9d216c',
-      clipperCove: '0x9e233dd6a90678baacd89c05ce5c48f43fcc106e',
+      clipperDirectExchange: '0x769728b5298445BA2828c0f3F5384227fbF590C5',
+      clipperCove: '0xB873921b1ADd94ea47Bf983B060CE812e97873df',
 
       addressZeroMap: {
         symbol: 'ETH',
@@ -239,7 +239,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       },
 
       ...commonConfig,
-      permitRouter: '0x154B08ca083baB868F8794e8b517Ea0fDd92D6E5',
+      permitRouter: '0x93a5943e3091e94aA16f0813BB6901C3E9D4eB98',
 
       // currency oracles
       ethOracleAddress: '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612',
