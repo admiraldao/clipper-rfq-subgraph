@@ -26,6 +26,7 @@ interface Deployment {
   linkOracleAddress: string
   opOracleAddress: string
   glmrOracleAddress: string
+  arbOracleAddress: string
 
   addressZeroMap: {
     symbol: string
@@ -64,6 +65,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     glmrOracleAddress: '0x0000000000000000000000000000000000000000',
     feeSplit: '0x0000000000000000000000000000000000000000',
     permitRouter: '0x0000000000000000000000000000000000000000',
+    arbOracleAddress: '0x0000000000000000000000000000000000000000',
     // as of 19/03/2022 at 00:20 AM ET.
     fallbackPrices: {
       WETH: 2948.37,
@@ -98,7 +100,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       },
       ...commonConfig,
       permitRouter: '0xF33141BC4E9D1d92a2Adba2fa27A09c2DA2AF3eB',
-      
+
       // Currencies
       ethOracleAddress: '0xF9680D99D6C9589e2a93a78A04A279e509205945',
       btcOracleAddress: '0xDE31F8bFBD8c84b5360CFACCa3539B938dd78ae6',
@@ -247,6 +249,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       daiOracleAddress: '0xc5C8E77B397E531B8EC06BFb0048328B30E9eCfB',
       usdcOracleAddress: '0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3',
       usdtOracleAddress: '0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7',
+      arbOracleAddress: '0xb2A824043730FE05F3DA2efaFa1CBbe83fa548D6',
     }
   }
 
