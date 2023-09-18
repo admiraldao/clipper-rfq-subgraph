@@ -213,7 +213,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       },
 
       ...commonConfig,
-      feeSplit: '0xc60bcDcE144a3B677e8f34bD4462Dc112948EFb6',
+      feeSplit: '0x84f4625C3E92b368E403cB002A9bF9bc7a9ae1b9',
       // currency oracles
       ethOracleAddress: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
       btcOracleAddress: '0xf4030086522a5beea4988f8ca5b36dbc97bee88c',
