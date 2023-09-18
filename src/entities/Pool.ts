@@ -1,16 +1,17 @@
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { DailyPoolStatus, HourlyPoolStatus, Pool } from '../../types/schema'
-import { clipperDirectExchangeAddress, clipperFeeSplitAddress } from '../addresses'
+import { clipperFeeSplitAddress, ClipperFeeSplitAddressesByDirectExchange } from '../addresses'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO, ONE_DAY, ONE_HOUR } from '../constants'
 import { getCurrentPoolLiquidity, getPoolTokenSupply } from '../utils/pool'
 import { fetchBigIntTokenBalance } from '../utils/token'
-import { getOpenTime } from '../utils/timeHelpers'
+import { getOpenTime } from '../utils/timeHelpers' 
 
-export function loadPool(): Pool {
-  let pool = Pool.load(clipperDirectExchangeAddress.toHex())
+
+export function loadPool(address: Address): Pool {
+  let pool = Pool.load(address.toHex())
 
   if (!pool) {
-    pool = new Pool(clipperDirectExchangeAddress.toHex())
+    pool = new Pool(address.toHex())
 
     // swaps
     pool.avgTrade = BIG_DECIMAL_ZERO
@@ -47,15 +48,14 @@ export function getDailyPoolStatus(pool: Pool, timestamp: BigInt): DailyPoolStat
   let from = openTime
   let to = openTime.plus(ONE_DAY).minus(BIG_INT_ONE)
 
-  let id = clipperDirectExchangeAddress
-    .toHexString()
+  let id = pool.id
     .concat('-')
     .concat(from.toString())
     .concat(to.toString())
 
-  let dailyPoolStatus = DailyPoolStatus.load(id) as DailyPoolStatus
+  let dailyPoolStatus = DailyPoolStatus.load(id)
 
-  if (!dailyPoolStatus) {
+  if (dailyPoolStatus == null) {
     dailyPoolStatus = new DailyPoolStatus(id)
 
     // swaps
@@ -95,13 +95,12 @@ export function getHourlyPoolStatus(pool: Pool, timestamp: BigInt): HourlyPoolSt
   let from = openTime
   let to = openTime.plus(ONE_HOUR).minus(BIG_INT_ONE)
 
-  let id = clipperDirectExchangeAddress
-    .toHexString()
+  let id = pool.id
     .concat('-')
     .concat(from.toString())
     .concat(to.toString())
 
-  let hourlyPoolStatus = HourlyPoolStatus.load(id) as HourlyPoolStatus
+  let hourlyPoolStatus = HourlyPoolStatus.load(id)
 
   if (!hourlyPoolStatus) {
     hourlyPoolStatus = new HourlyPoolStatus(id)
@@ -136,12 +135,12 @@ export function getHourlyPoolStatus(pool: Pool, timestamp: BigInt): HourlyPoolSt
 }
 
 export function updatePoolStatus(
-  timestamp: BigInt,
+  event: ethereum.Event,
   addedTxVolume: BigDecimal,
   addNewUser: boolean,
   addedTxFee: BigDecimal,
 ): Pool {
-  let pool = loadPool()
+  let pool = loadPool(event.address)
   pool.txCount = pool.txCount.plus(BIG_INT_ONE)
   pool.volumeUSD = pool.volumeUSD.plus(addedTxVolume)
   pool.avgTrade = pool.volumeUSD.div(pool.txCount.toBigDecimal())
@@ -156,8 +155,8 @@ export function updatePoolStatus(
     pool.uniqueUsers = pool.uniqueUsers.plus(BIG_INT_ONE)
   }
 
-  updateDailyPoolStatus(pool, timestamp, addedTxVolume, addedTxFee)
-  updateHourlyPoolStatus(pool, timestamp, addedTxVolume, addedTxFee)
+  updateDailyPoolStatus(pool, event.block.timestamp, addedTxVolume, addedTxFee)
+  updateHourlyPoolStatus(pool, event.block.timestamp, addedTxVolume, addedTxFee)
 
   pool.save()
 
@@ -172,7 +171,9 @@ function updateDailyPoolStatus(
 ): DailyPoolStatus {
   let dailyPoolStatus = getDailyPoolStatus(pool, timestamp)
   let poolTokensSupply = getPoolTokenSupply(pool.id)
-  let poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(pool.id, clipperFeeSplitAddress)
+  let feeSplitAddress = ClipperFeeSplitAddressesByDirectExchange.get(pool.id.toLowerCase())
+
+  let poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(pool.id, feeSplitAddress ? Address.fromString(feeSplitAddress) : clipperFeeSplitAddress)
   // the fraction owned by fee split contract
   let theFraction = poolTokenOwnedByFeeSplit.toBigDecimal().div(poolTokensSupply.toBigDecimal())
   let revenueUSD = addedTxFee.times(theFraction).times(BigDecimal.fromString('0.5'))

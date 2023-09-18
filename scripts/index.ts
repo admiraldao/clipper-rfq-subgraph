@@ -202,7 +202,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       coveStartBlock: 15819271,
 
       // Core
-      clipperDirectExchange: '0xe7b0ce0526fbe3969035a145c9e9691d4d9d216c',
+      clipperDirectExchange: '0x655eDCE464CC797526600a462A8154650EEe4B77',
       clipperCove: '0x44d097113DBEad613fde74b387081FB3b547C54f',
 
       addressZeroMap: {
@@ -213,7 +213,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       },
 
       ...commonConfig,
-      feeSplit: '0x51b0efa27ff4f29f8315496f01952377d581ce73',
+      feeSplit: '0xc60bcDcE144a3B677e8f34bD4462Dc112948EFb6',
       // currency oracles
       ethOracleAddress: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
       btcOracleAddress: '0xf4030086522a5beea4988f8ca5b36dbc97bee88c',

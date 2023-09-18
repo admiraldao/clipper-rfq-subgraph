@@ -4,6 +4,15 @@ export let clipperDirectExchangeAddress = Address.fromString('{{clipperDirectExc
 export let clipperCoveAddress = Address.fromString('{{clipperCove}}')
 export let clipperFeeSplitAddress = Address.fromString('{{feeSplit}}')
 export let clipperPermitRouterAddress = Address.fromString('{{permitRouter}}')
+export let ClipperFeeSplitAddressesByDirectExchange = new TypedMap<string, string>()
+ClipperFeeSplitAddressesByDirectExchange.set(
+  clipperDirectExchangeAddress.toHexString(),
+  clipperFeeSplitAddress.toHexString(),
+)
+ClipperFeeSplitAddressesByDirectExchange.set(
+  '0xe7b0ce0526fbe3969035a145c9e9691d4d9d216c'.toLowerCase(),
+  '0x51b0efa27ff4f29f8315496f01952377d581ce73'.toLowerCase(),
+)
 
 export let PriceOracleAddresses = new TypedMap<string, string>()
 PriceOracleAddresses.set('WETH', '{{ethOracleAddress}}') // eth / usd chainlink oracle
