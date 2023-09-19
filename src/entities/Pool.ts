@@ -1,11 +1,10 @@
 import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { DailyPoolStatus, HourlyPoolStatus, Pool } from '../../types/schema'
-import { clipperFeeSplitAddress, ClipperFeeSplitAddressesByDirectExchange } from '../addresses'
+import { ClipperFeeSplitAddressesByDirectExchange, clipperFeeSplitAddress } from '../addresses'
 import { BIG_DECIMAL_ZERO, BIG_INT_ONE, BIG_INT_ZERO, ONE_DAY, ONE_HOUR } from '../constants'
 import { getCurrentPoolLiquidity, getPoolTokenSupply } from '../utils/pool'
+import { getOpenTime } from '../utils/timeHelpers'
 import { fetchBigIntTokenBalance } from '../utils/token'
-import { getOpenTime } from '../utils/timeHelpers' 
-
 
 export function loadPool(address: Address): Pool {
   let pool = Pool.load(address.toHex())
@@ -113,6 +112,7 @@ export function getHourlyPoolStatus(pool: Pool, timestamp: BigInt): HourlyPoolSt
     hourlyPoolStatus.feeUSD = BIG_DECIMAL_ZERO
     hourlyPoolStatus.avgTradeFee = BIG_DECIMAL_ZERO
     hourlyPoolStatus.avgFeeInBps = BIG_DECIMAL_ZERO
+    hourlyPoolStatus.revenueUSD = BIG_DECIMAL_ZERO
 
     //deposits
     hourlyPoolStatus.avgDeposit = BIG_DECIMAL_ZERO
@@ -127,6 +127,7 @@ export function getHourlyPoolStatus(pool: Pool, timestamp: BigInt): HourlyPoolSt
     hourlyPoolStatus.pool = pool.id
     hourlyPoolStatus.from = from
     hourlyPoolStatus.to = to
+    hourlyPoolStatus.poolValue = getCurrentPoolLiquidity(pool.id)
 
     hourlyPoolStatus.save()
   }
@@ -173,10 +174,16 @@ function updateDailyPoolStatus(
   let poolTokensSupply = getPoolTokenSupply(pool.id)
   let feeSplitAddress = ClipperFeeSplitAddressesByDirectExchange.get(pool.id.toLowerCase())
 
-  let poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(pool.id, feeSplitAddress ? Address.fromString(feeSplitAddress) : clipperFeeSplitAddress)
+  let poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(
+    pool.id,
+    feeSplitAddress ? Address.fromString(feeSplitAddress) : clipperFeeSplitAddress,
+  )
   // the fraction owned by fee split contract
   let theFraction = poolTokenOwnedByFeeSplit.toBigDecimal().div(poolTokensSupply.toBigDecimal())
-  let revenueUSD = addedTxFee.times(theFraction).times(BigDecimal.fromString('0.5'))
+  let daoRevenueFraction = timestamp.ge(BigInt.fromI32(1690848000))
+    ? BigDecimal.fromString('1')
+    : BigDecimal.fromString('0.5')
+  let revenueUSD = addedTxFee.times(theFraction).times(daoRevenueFraction)
 
   pool.revenueUSD = pool.revenueUSD.plus(revenueUSD)
 
@@ -204,6 +211,17 @@ function updateHourlyPoolStatus(
   addedTxFee: BigDecimal,
 ): HourlyPoolStatus {
   let hourlyPoolStatus = getHourlyPoolStatus(pool, timestamp)
+  let poolTokensSupply = getPoolTokenSupply(pool.id)
+  let poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(pool.id, clipperFeeSplitAddress)
+  // the fraction owned by fee split contract
+  let theFraction = poolTokenOwnedByFeeSplit.toBigDecimal().div(poolTokensSupply.toBigDecimal())
+
+  let daoRevenueFraction = timestamp.ge(BigInt.fromI32(1690848000))
+    ? BigDecimal.fromString('1')
+    : BigDecimal.fromString('0.5')
+  let revenueUSD = addedTxFee.times(theFraction).times(daoRevenueFraction)
+
+  pool.revenueUSD = pool.revenueUSD.plus(revenueUSD)
 
   hourlyPoolStatus.txCount = hourlyPoolStatus.txCount.plus(BIG_INT_ONE)
   hourlyPoolStatus.volumeUSD = hourlyPoolStatus.volumeUSD.plus(addedTxVolume)
@@ -214,6 +232,7 @@ function updateHourlyPoolStatus(
     .div(hourlyPoolStatus.volumeUSD)
     .times(BigDecimal.fromString('100'))
     .times(BigDecimal.fromString('100'))
+  hourlyPoolStatus.revenueUSD = hourlyPoolStatus.revenueUSD.plus(revenueUSD)
 
   hourlyPoolStatus.save()
 

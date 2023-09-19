@@ -109,6 +109,8 @@ type HourlyPoolStatus @entity {
   # Average trade fee in USD
   avgTradeFee: BigDecimal
   avgFeeInBps: BigDecimal!
+  # total revenue made by clipper fee split
+  revenueUSD: BigDecimal!
 
   # number of deposits during hourly period
   depositCount: BigInt!
@@ -123,6 +125,8 @@ type HourlyPoolStatus @entity {
   withdrewUSD: BigDecimal!
   # Average withdrawal amount of USD during hourly period
   avgWithdraw: BigDecimal!
+  ## pool liquidity value at the beginning of the day
+  poolValue: BigDecimal!
 }
 
 type Token @entity {
