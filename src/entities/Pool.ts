@@ -156,8 +156,24 @@ export function updatePoolStatus(
     pool.uniqueUsers = pool.uniqueUsers.plus(BIG_INT_ONE)
   }
 
-  updateDailyPoolStatus(pool, event.block.timestamp, addedTxVolume, addedTxFee)
-  updateHourlyPoolStatus(pool, event.block.timestamp, addedTxVolume, addedTxFee)
+  let poolTokensSupply = getPoolTokenSupply(pool.id)
+  let feeSplitAddress = ClipperFeeSplitAddressesByDirectExchange.get(pool.id.toLowerCase())
+
+  let poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(
+    pool.id,
+    feeSplitAddress ? Address.fromString(feeSplitAddress) : clipperFeeSplitAddress,
+  )
+  // the fraction owned by fee split contract
+  let theFraction = poolTokenOwnedByFeeSplit.toBigDecimal().div(poolTokensSupply.toBigDecimal())
+  let daoRevenueFraction = event.block.timestamp.ge(BigInt.fromI32(1690848000))
+    ? BigDecimal.fromString('1')
+    : BigDecimal.fromString('0.5')
+  let revenueUSD = addedTxFee.times(theFraction).times(daoRevenueFraction)
+
+  pool.revenueUSD = pool.revenueUSD.plus(revenueUSD)
+
+  updateDailyPoolStatus(pool, event.block.timestamp, addedTxVolume, addedTxFee, poolTokensSupply, revenueUSD)
+  updateHourlyPoolStatus(pool, event.block.timestamp, addedTxVolume, addedTxFee, poolTokensSupply, revenueUSD)
 
   pool.save()
 
@@ -169,23 +185,10 @@ function updateDailyPoolStatus(
   timestamp: BigInt,
   addedTxVolume: BigDecimal,
   addedTxFee: BigDecimal,
+  poolTokensSupply: BigInt,
+  revenueUSD: BigDecimal,
 ): DailyPoolStatus {
   let dailyPoolStatus = getDailyPoolStatus(pool, timestamp)
-  let poolTokensSupply = getPoolTokenSupply(pool.id)
-  let feeSplitAddress = ClipperFeeSplitAddressesByDirectExchange.get(pool.id.toLowerCase())
-
-  let poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(
-    pool.id,
-    feeSplitAddress ? Address.fromString(feeSplitAddress) : clipperFeeSplitAddress,
-  )
-  // the fraction owned by fee split contract
-  let theFraction = poolTokenOwnedByFeeSplit.toBigDecimal().div(poolTokensSupply.toBigDecimal())
-  let daoRevenueFraction = timestamp.ge(BigInt.fromI32(1690848000))
-    ? BigDecimal.fromString('1')
-    : BigDecimal.fromString('0.5')
-  let revenueUSD = addedTxFee.times(theFraction).times(daoRevenueFraction)
-
-  pool.revenueUSD = pool.revenueUSD.plus(revenueUSD)
 
   dailyPoolStatus.txCount = dailyPoolStatus.txCount.plus(BIG_INT_ONE)
   dailyPoolStatus.volumeUSD = dailyPoolStatus.volumeUSD.plus(addedTxVolume)
@@ -209,30 +212,23 @@ function updateHourlyPoolStatus(
   timestamp: BigInt,
   addedTxVolume: BigDecimal,
   addedTxFee: BigDecimal,
+  poolTokensSupply: BigInt,
+  revenueUSD: BigDecimal,
 ): HourlyPoolStatus {
   let hourlyPoolStatus = getHourlyPoolStatus(pool, timestamp)
-  let poolTokensSupply = getPoolTokenSupply(pool.id)
-  let poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(pool.id, clipperFeeSplitAddress)
-  // the fraction owned by fee split contract
-  let theFraction = poolTokenOwnedByFeeSplit.toBigDecimal().div(poolTokensSupply.toBigDecimal())
-
-  let daoRevenueFraction = timestamp.ge(BigInt.fromI32(1690848000))
-    ? BigDecimal.fromString('1')
-    : BigDecimal.fromString('0.5')
-  let revenueUSD = addedTxFee.times(theFraction).times(daoRevenueFraction)
-
-  pool.revenueUSD = pool.revenueUSD.plus(revenueUSD)
 
   hourlyPoolStatus.txCount = hourlyPoolStatus.txCount.plus(BIG_INT_ONE)
   hourlyPoolStatus.volumeUSD = hourlyPoolStatus.volumeUSD.plus(addedTxVolume)
-  hourlyPoolStatus.avgTrade = hourlyPoolStatus.volumeUSD.div(hourlyPoolStatus.txCount.toBigDecimal())
   hourlyPoolStatus.feeUSD = hourlyPoolStatus.feeUSD.plus(addedTxFee)
-  hourlyPoolStatus.avgTradeFee = hourlyPoolStatus.feeUSD.div(hourlyPoolStatus.txCount.toBigDecimal())
-  hourlyPoolStatus.avgFeeInBps = hourlyPoolStatus.feeUSD
-    .div(hourlyPoolStatus.volumeUSD)
-    .times(BigDecimal.fromString('100'))
-    .times(BigDecimal.fromString('100'))
   hourlyPoolStatus.revenueUSD = hourlyPoolStatus.revenueUSD.plus(revenueUSD)
+  hourlyPoolStatus.avgTrade = hourlyPoolStatus.volumeUSD.div(hourlyPoolStatus.txCount.toBigDecimal())
+  hourlyPoolStatus.avgTradeFee = hourlyPoolStatus.feeUSD.div(hourlyPoolStatus.txCount.toBigDecimal())
+  if (addedTxVolume.gt(BIG_DECIMAL_ZERO)) {
+    hourlyPoolStatus.avgFeeInBps = hourlyPoolStatus.feeUSD
+      .div(hourlyPoolStatus.volumeUSD)
+      .times(BigDecimal.fromString('100'))
+      .times(BigDecimal.fromString('100'))
+  }
 
   hourlyPoolStatus.save()
 
