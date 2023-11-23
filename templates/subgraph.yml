@@ -69,3 +69,23 @@ dataSources:
         - event: CoveWithdrawn(indexed address,indexed address,uint256,uint256)
           handler: handleCoveWithdrawn
       file: ./src/coveMapping.ts
+  - name: LinearVestingVault
+    kind: ethereum/contract
+    network: {{networkName}}
+    source:
+      address: '{{farm}}'
+      abi: LinearVestingVault
+      startBlock: {{farmStartBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      abis:
+        - name: LinearVestingVault
+          file: ./abis/LinearVestingVault.json
+      entities:
+        - Deposit
+      eventHandlers:
+        - event: Deposit(indexed address,indexed address,uint256,uint256)
+          handler: handleFarmDeposit
+      file: ./src/farmMapping.ts
