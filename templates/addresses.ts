@@ -4,7 +4,6 @@ export let clipperDirectExchangeAddress = Address.fromString('{{clipperDirectExc
 export let clipperCoveAddress = Address.fromString('{{clipperCove}}')
 export let clipperFeeSplitAddress = Address.fromString('{{feeSplit}}')
 export let clipperPermitRouterAddress = Address.fromString('{{permitRouter}}')
-export let clipperFarmAddress = Address.fromString('{{farm}}')
 export let clipperFarmingHelperAddress = Address.fromString('{{farmingHelper}}')
 
 

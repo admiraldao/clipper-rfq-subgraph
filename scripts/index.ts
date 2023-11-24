@@ -7,14 +7,12 @@ interface Deployment {
   networkName: string
   startBlock: number
   coveStartBlock: number
-  farmStartBlock: number
 
   // Core
   clipperDirectExchange: string
   clipperCove: string
   feeSplit: string
   permitRouter: string
-  farm: string;
   farmingHelper: string;
 
   // Currencies
@@ -69,7 +67,6 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     feeSplit: '0x0000000000000000000000000000000000000000',
     permitRouter: '0x0000000000000000000000000000000000000000',
     arbOracleAddress: '0x0000000000000000000000000000000000000000',
-    farm: '0x0000000000000000000000000000000000000000',
     farmingHelper: '0x0000000000000000000000000000000000000000',
     // as of 19/03/2022 at 00:20 AM ET.
     fallbackPrices: {
@@ -92,7 +89,6 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       networkName: 'matic',
       startBlock: 27340300,
       coveStartBlock: 28486635,
-      farmStartBlock: 28486635,
 
       // Core
       clipperDirectExchange: '0x6Bfce69d1Df30FD2B2C8e478EDEC9dAa643Ae3B8',
@@ -123,7 +119,6 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       networkName: 'mbase',
       startBlock: 1518878,
       coveStartBlock: 1518878,
-      farmStartBlock: 1518878,
 
       // Core
       clipperDirectExchange: '0xc2dc657a3eef28f48bad9c3db27e33c4a76efd4c',
@@ -149,7 +144,6 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       networkName: 'optimism',
       startBlock: 12746008,
       coveStartBlock: 12747614,
-      farmStartBlock: 107733812,
 
       // Core
       clipperDirectExchange: '0x5130f6cE257B8F9bF7fac0A0b519Bd588120ed40',
@@ -163,7 +157,6 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       },
 
       ...commonConfig,
-      farm: '0xAc2B3f9a13E7273639bcDCa55742391CDACC74cB',
       farmingHelper: '0x55f7c152b0C3cc1cD7479e4858Ac07f50D7fcFAD',
       permitRouter: '0xF33141BC4E9D1d92a2Adba2fa27A09c2DA2AF3eB',
 
@@ -183,7 +176,6 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       networkName: 'moonbeam',
       startBlock: 855590,
       coveStartBlock: 1054979,
-      farmStartBlock: 1054979,
 
       // Core
       clipperDirectExchange: '0xCE37051a3e60587157DC4c0391B4C555c6E68255',
@@ -211,7 +203,6 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       networkName: 'mainnet',
       startBlock: 15277939,
       coveStartBlock: 15819271,
-      farmStartBlock: 15819271,
 
       // Core
       clipperDirectExchange: '0xe7b0ce0526fbe3969035a145c9e9691d4d9d216c',
@@ -240,7 +231,6 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       networkName: 'arbitrum-one',
       startBlock: 117111604,
       coveStartBlock: 117186034,
-      farmStartBlock: 117186034,
 
       // Core
       clipperDirectExchange: '0x769728b5298445BA2828c0f3F5384227fbF590C5',
