@@ -9,7 +9,7 @@ import { convertTokenToDecimal, loadToken, loadTransactionSource } from './utils
 import { getCurrentPoolLiquidity, getPoolTokenSupply } from './utils/pool'
 import { getUsdPrice } from './utils/prices'
 import { fetchTokenBalance } from './utils/token'
-import { clipperDirectExchangeAddress, clipperPermitRouterAddress } from './addresses'
+import { clipperDirectExchangeAddress, clipperFarmingHelperAddress, clipperPermitRouterAddress } from './addresses'
 
 export function handleDeposited(event: Deposited): void {
   let pool = loadPool()
@@ -28,7 +28,11 @@ export function handleDeposited(event: Deposited): void {
   newDeposit.pool = clipperDirectExchangeAddress.toHexString()
   newDeposit.poolTokens = receivedPoolTokens
   newDeposit.amountUsd = usdProportion
-  newDeposit.depositor = event.params.depositor
+  if (event.params.depositor.equals(clipperFarmingHelperAddress)) {
+    newDeposit.depositor = event.transaction.from
+  } else {
+    newDeposit.depositor = event.params.depositor
+  }
 
   pool.poolTokensSupply = poolTokenSupply
   pool.depositCount = pool.depositCount.plus(BIG_INT_ONE)
