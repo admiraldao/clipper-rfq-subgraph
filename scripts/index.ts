@@ -13,6 +13,7 @@ interface Deployment {
   clipperCove: string
   feeSplit: string
   permitRouter: string
+  farmingHelper: string;
 
   // Currencies
   ethOracleAddress: string
@@ -66,6 +67,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     feeSplit: '0x0000000000000000000000000000000000000000',
     permitRouter: '0x0000000000000000000000000000000000000000',
     arbOracleAddress: '0x0000000000000000000000000000000000000000',
+    farmingHelper: '0x0000000000000000000000000000000000000000',
     // as of 19/03/2022 at 00:20 AM ET.
     fallbackPrices: {
       WETH: 2948.37,
@@ -155,6 +157,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       },
 
       ...commonConfig,
+      farmingHelper: '0x55f7c152b0C3cc1cD7479e4858Ac07f50D7fcFAD',
       permitRouter: '0xF33141BC4E9D1d92a2Adba2fa27A09c2DA2AF3eB',
 
       // Currencies
