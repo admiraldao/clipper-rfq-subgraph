@@ -281,7 +281,6 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       btcOracleAddress: '0xccadc697c55bbb68dc5bcdf8d3cbe83cdd4e071e',
       daiOracleAddress: '0x591e79239a7d679378ec8c847e5038150364c78f',
       usdcOracleAddress: '0x7e860098f58bbfc8648a4311b374b1d669a2bc6b',
-      usdtOracleAddress: '0xf19d560eb8d2adf07bd6d13ed03e1d11215721f9',
     }
   }
 
