@@ -256,6 +256,35 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     }
   }
 
+  if (source === 'base') {
+    return {
+      networkName: 'base',
+      startBlock: 7852637,
+      coveStartBlock: 7860355,
+
+      // Core
+      clipperDirectExchange: '0xfAab5716703BB76Fb2402a94052AD336bAf38d3a',
+      clipperCove: '0x617773fC126Daa7F6dc9F189D88B40aCD8fcefe2',
+
+      addressZeroMap: {
+        symbol: 'ETH',
+        decimals: 18,
+        name: 'Ether',
+        address: '0x0000000000000000000000000000000000000000',
+      },
+
+      ...commonConfig,
+      permitRouter: '0xB0b2F39daFc7a761ae97A7EeC63dd31aC211d0f4',
+
+      // currency oracles
+      ethOracleAddress: '0x71041dddad3595f9ced3dccfbe3d1f4b0a16bb70',
+      btcOracleAddress: '0xccadc697c55bbb68dc5bcdf8d3cbe83cdd4e071e',
+      daiOracleAddress: '0x591e79239a7d679378ec8c847e5038150364c78f',
+      usdcOracleAddress: '0x7e860098f58bbfc8648a4311b374b1d669a2bc6b',
+      usdtOracleAddress: '0xf19d560eb8d2adf07bd6d13ed03e1d11215721f9',
+    }
+  }
+
   throw new Error('Unsupported deployment')
 }
 
