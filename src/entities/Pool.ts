@@ -157,12 +157,18 @@ export function updatePoolStatus(
   }
 
   let poolTokensSupply = getPoolTokenSupply(pool.id)
-  let feeSplitAddress = ClipperFeeSplitAddressesByDirectExchange.get(pool.id.toLowerCase())
+  let feeSplitAddresses = ClipperFeeSplitAddressesByDirectExchange.get(pool.id.toLowerCase())
+  let poolTokenOwnedByFeeSplit: BigInt = BIG_INT_ZERO
+  if (feeSplitAddresses !== null && feeSplitAddresses.length > 0) {
+    for (let i = 0; i < feeSplitAddresses.length; i++) {
+      poolTokenOwnedByFeeSplit = poolTokenOwnedByFeeSplit.plus(
+        fetchBigIntTokenBalance(pool.id, Address.fromString(feeSplitAddresses[i])),
+      )
+    }
+  } else {
+    poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(pool.id, clipperFeeSplitAddress)
+  }
 
-  let poolTokenOwnedByFeeSplit = fetchBigIntTokenBalance(
-    pool.id,
-    feeSplitAddress ? Address.fromString(feeSplitAddress) : clipperFeeSplitAddress,
-  )
   // the fraction owned by fee split contract
   let theFraction = poolTokenOwnedByFeeSplit.toBigDecimal().div(poolTokensSupply.toBigDecimal())
   let daoRevenueFraction = event.block.timestamp.ge(BigInt.fromI32(1690848000))
