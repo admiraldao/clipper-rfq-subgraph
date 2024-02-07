@@ -140,6 +140,8 @@ export function handleSwapped(event: Swapped): void {
   swap.recipient = event.params.recipient
   swap.amountIn = amountIn
   swap.amountOut = amountOut
+  swap.amountInRaw = event.params.inAmount
+  swap.amountOutRaw = event.params.outAmount
   swap.logIndex = event.logIndex
   swap.pricePerInputToken = inputPrice
   swap.pricePerOutputToken = outputPrice
