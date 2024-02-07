@@ -12,6 +12,7 @@ interface Deployment {
   clipperDirectExchange: string
   clipperCove: string
   feeSplit: string
+  farmFeeSplit: string
   permitRouter: string
 
   // Currencies
@@ -64,6 +65,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
     opOracleAddress: '0x0000000000000000000000000000000000000000',
     glmrOracleAddress: '0x0000000000000000000000000000000000000000',
     feeSplit: '0x0000000000000000000000000000000000000000',
+    farmFeeSplit: '0x0000000000000000000000000000000000000000',
     permitRouter: '0x0000000000000000000000000000000000000000',
     arbOracleAddress: '0x0000000000000000000000000000000000000000',
     // as of 19/03/2022 at 00:20 AM ET.
@@ -214,6 +216,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
 
       ...commonConfig,
       feeSplit: '0x84f4625C3E92b368E403cB002A9bF9bc7a9ae1b9',
+      farmFeeSplit: '0xD0454428ecd868A9AC615125FCbDB5Da9027436e',
       // currency oracles
       ethOracleAddress: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
       btcOracleAddress: '0xf4030086522a5beea4988f8ca5b36dbc97bee88c',
