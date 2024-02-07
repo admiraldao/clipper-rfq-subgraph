@@ -198,6 +198,9 @@ type Swap @entity(immutable: true) {
   pair: Pair
   swapType: SwapType
   cove: Cove
+
+  amountInRaw: BigInt!
+  amountOutRaw: BigInt!
 }
 
 type Pair @entity {
