@@ -13,7 +13,7 @@ interface Deployment {
   clipperCove: string
   feeSplit: string
   permitRouter: string
-  farmingHelper: string;
+  farmingHelper: string
 
   // Currencies
   ethOracleAddress: string
@@ -259,12 +259,12 @@ async function fetchDeployment(source: string): Promise<Deployment> {
   if (source === 'base') {
     return {
       networkName: 'base',
-      startBlock: 7852637,
-      coveStartBlock: 7860355,
+      startBlock: 11871349,
+      coveStartBlock: 11871349,
 
       // Core
-      clipperDirectExchange: '0xfAab5716703BB76Fb2402a94052AD336bAf38d3a',
-      clipperCove: '0x617773fC126Daa7F6dc9F189D88B40aCD8fcefe2',
+      clipperDirectExchange: '0xb32D856cAd3D2EF07C94867A800035E37241247C',
+      clipperCove: '0x0000000000000000000000000000000000000000',
 
       addressZeroMap: {
         symbol: 'ETH',
@@ -274,7 +274,7 @@ async function fetchDeployment(source: string): Promise<Deployment> {
       },
 
       ...commonConfig,
-      permitRouter: '0xB0b2F39daFc7a761ae97A7EeC63dd31aC211d0f4',
+      permitRouter: '0x41c5362ADf3a2Cf6815454F7633172e7F6C1f834',
 
       // currency oracles
       ethOracleAddress: '0x71041dddad3595f9ced3dccfbe3d1f4b0a16bb70',
